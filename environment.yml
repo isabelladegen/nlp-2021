@@ -1,0 +1,5 @@
+name: nlp-2021
+channels:
+  - conda-forge
+dependencies:
+  - python=3.9
