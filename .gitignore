@@ -1,5 +1,7 @@
 #jetbrains
 .idea/
+data_cache/
+.DS_Store
 
 #LaTeX
 *.aux
