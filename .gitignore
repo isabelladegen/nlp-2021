@@ -2,6 +2,7 @@
 .idea/
 data_cache/
 .DS_Store
+papers/
 
 #LaTeX
 *.aux

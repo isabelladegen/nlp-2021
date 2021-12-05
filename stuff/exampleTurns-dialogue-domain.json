@@ -1,0 +1,155 @@
+//turns for doc id ID Renew non-driver ID card#1_0"
+[
+  {
+    "da": "query_condition",
+    "role": "user",
+    "references": [
+      {
+        "label": "precondition",
+        "sp_id": "77"
+      }
+    ],
+    "turn_id": 1,
+    "utterance": "Good morning, i wanted to know if there is any kind of additional information about renewing a non-driver ID card?"
+  },
+  {
+    "da": "query_condition",
+    "role": "user",
+    "references": [
+      {
+        "label": "precondition",
+        "sp_id": "90"
+      }
+    ],
+    "turn_id": 2,
+    "utterance": "More exactly, if i need to renew it in case i go overseas?"
+  },
+  {
+    "da": "respond_solution",
+    "role": "agent",
+    "references": [
+      {
+        "label": "solution",
+        "sp_id": "92"
+      }
+    ],
+    "turn_id": 3,
+    "utterance": "Yes, you must renew your non-driver ID card if you are planning to go overseas. You can do it through mail."
+  },
+  {
+    "da": "query_condition",
+    "role": "user",
+    "references": [
+      {
+        "label": "precondition",
+        "sp_id": "82"
+      }
+    ],
+    "turn_id": 4,
+    "utterance": "Ok. I'm turning 21 soon, so i was wondering if i won't have any problems renewing my ID before that date or if must wait until i turn 21?"
+  },
+  {
+    "da": "respond_solution",
+    "role": "agent",
+    "references": [
+      {
+        "label": "solution",
+        "sp_id": "83"
+      }
+    ],
+    "turn_id": 5,
+    "utterance": "Well, in case you go through renewal for at least forty days before your birthday, you'll be issued a non-driver ID card with the words UNDER 21 on it, near of your birthday date."
+  },
+  {
+    "da": "query_condition",
+    "role": "user",
+    "references": [
+      {
+        "label": "precondition",
+        "sp_id": "109"
+      }
+    ],
+    "turn_id": 6,
+    "utterance": "Right, i'll keep that in mind. Now please, i'm willing to go to an office and renew my ID there, but i would like to keep my standard document. What should i do in that case?"
+  },
+  {
+    "da": "respond_solution",
+    "role": "agent",
+    "references": [
+      {
+        "label": "solution",
+        "sp_id": "110"
+      },
+      {
+        "label": "solution",
+        "sp_id": "112"
+      }
+    ],
+    "turn_id": 7,
+    "utterance": "Very well. In that case, you'll need to complete the renewal notice form MV-2 that we mailed to you in order to proceed."
+  },
+  {
+    "da": "query_solution",
+    "role": "user",
+    "references": [
+      {
+        "label": "solution",
+        "sp_id": "48"
+      },
+      {
+        "label": "solution",
+        "sp_id": "49"
+      },
+      {
+        "label": "solution",
+        "sp_id": "50"
+      }
+    ],
+    "turn_id": 8,
+    "utterance": "Ok, yeah, i received that form. And what about the possibility for an ID with reduced fee or none at all?"
+  },
+  {
+    "da": "respond_solution",
+    "role": "agent",
+    "references": [
+      {
+        "label": "solution",
+        "sp_id": "48"
+      },
+      {
+        "label": "solution",
+        "sp_id": "49"
+      },
+      {
+        "label": "solution",
+        "sp_id": "50"
+      }
+    ],
+    "turn_id": 9,
+    "utterance": "That will depend if you meet the requirements. For reduced fee ID you have to being on receiving supplemental security income and to be under sixty two, which would get you a $6.50 fee."
+  },
+  {
+    "da": "query_condition",
+    "role": "user",
+    "references": [
+      {
+        "label": "precondition",
+        "sp_id": "123"
+      }
+    ],
+    "turn_id": 10,
+    "utterance": "Ok, and what about fees if i renew via online?"
+  },
+  {
+    "da": "respond_solution",
+    "role": "agent",
+    "references": [
+      {
+        "label": "solution",
+        "sp_id": "124"
+      }
+    ],
+    "turn_id": 11,
+    "utterance": "In that case, you'll have to pay the normal fees applying to a non-driver ID card renewal process."
+  }
+]
