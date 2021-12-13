@@ -1,6 +1,7 @@
 #jetbrains
 .idea/
 data_cache/
+data_cache_rc_notebook/
 .DS_Store
 papers/
 
