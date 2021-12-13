@@ -2,6 +2,7 @@
 .idea/
 data_cache/
 data_cache_rc_notebook/
+data_cache_doc2vec_notebook/
 .DS_Store
 papers/
 
