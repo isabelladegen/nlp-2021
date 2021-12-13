@@ -3,6 +3,7 @@
 data_cache/
 data_cache_rc_notebook/
 data_cache_doc2vec_notebook/
+data_cache_doc2vec_solution_notebook/
 .DS_Store
 papers/
 
