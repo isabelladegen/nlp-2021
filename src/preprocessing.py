@@ -1,6 +1,9 @@
 """
 This script is used to convert the raw data for training and evaluation
 
+TODO:
+- use config file for variables
+- log configurations such as preprocessing method
 
 """
 
@@ -119,7 +122,12 @@ class GroundingDocument:
             result.append(TaggedDocument(value, key))
         return result
 
-# 1. read data
-# 2. create list of grounding documents from classes
-# 2.1 preprocess the documents using a general method
-# document_full_df = pd.DataFrame(data=document_dataset)
+    def tagged_document_for(self, span_id: str) -> TaggedDocument:
+        return next((doc for doc in self.tagged_documents if doc.tags == span_id), None)
+        # TODO  think about keeing tagged documents in a dictionary keyed in span id too
+
+    def original_text_for_sp_id(self, span_id):
+        return self.raw_spans[span_id]
+
+    def processed_text_for_sp_id(self, span_id):
+        return self.preprocessed_spans[span_id]

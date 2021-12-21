@@ -1,6 +1,7 @@
-name: nlp-2-2021
+name: nlp-2021
 channels:
   - conda-forge
+  - defaults
 dependencies:
   - python=3.9
   - jupyter
@@ -10,11 +11,12 @@ dependencies:
   - pandas
   - scikit-learn
   - nltk
-  - pytorch
+#  - pytorch
   - seaborn
   - gensim
-  - hydra # config
+  - hydra-core # config
   - omegaconf # config
-  - mlflow # experiment mgr
+#  - mlflow # experiment mgr
+  - wandb # experiment mgr
   - pytest
   - pyhamcrest
