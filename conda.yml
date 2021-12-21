@@ -1,4 +1,4 @@
-name: nlp-2021
+name: nlp-2-2021
 channels:
   - conda-forge
 dependencies:
@@ -13,3 +13,8 @@ dependencies:
   - pytorch
   - seaborn
   - gensim
+  - hydra # config
+  - omegaconf # config
+  - mlflow # experiment mgr
+  - pytest
+  - pyhamcrest

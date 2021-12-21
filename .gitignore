@@ -5,6 +5,7 @@ data_cache_rc_notebook/
 data_cache_doc2vec_notebook/
 data_cache_doc2vec_solution_notebook/
 data_cache_doc2vec_solution_spans_notebook/
+src/tests/data_cache_src/
 .DS_Store
 papers/
 

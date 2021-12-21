@@ -1,0 +1,9 @@
+dataset:
+  cache_dir: ./data_cache_src
+  path: doc2dial
+  dialogue_name: dialogue_domain
+  grounding_document_name: document_domain
+  
+
+
+
