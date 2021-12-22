@@ -1,45 +1,31 @@
 import pandas as pd
 from src.preprocessing import GroundingDocument
 
-# TODO turn into a builder test data
-example_doc_id = 'Benefits Planner: Survivors | Planning'
-span1_id = '6'
-span1_text = 'In 2019 , '
-span1 = {
-    'id_sp': span1_id,
-    'tag': 'u',
-    'start_sp': 317,
-    'end_sp': 327,
-    'text_sp': span1_text,
-    'title': 'Benefits Planner: Survivors | Planning For Your Survivors',
-    'parent_titles': '[]',
-    'id_sec': '2',
-    'start_sec': 274,
-    'text_sec': 'You can earn up to four credits each year. In 2019 , for example , you earn one credit for each $1,360 of wages or self - employment income. When you have earned $5,440 , you have earned your four credits for the year. ',
-    'end_sec': 493
-}
-span2_text = 'for example , '
-span2_id = '7'
-span2 = {
-    'id_sp': span2_id,
-    'tag': 'u',
-    'start_sp': 327,
-    'end_sp': 341,
-    'text_sp': ('%s' % span2_text),
-    'title': 'Benefits Planner: Survivors | Planning For Your Survivors',
-    'parent_titles': '[]',
-    'id_sec': '2',
-    'start_sec': 274,
-    'text_sec': 'You can earn up to four credits each year. In 2019 , for example , you earn one credit for each $1,360 of wages or self - employment income. When you have earned $5,440 , you have earned your four credits for the year. ',
-    'end_sec': 493
-}
-example_spans = [span1, span2]
 
+class DocumentDatasetBuilder:
+    def __init__(self):
+        span = SpanBuilder().build()
+        doc_id = span['title']
+        self.doc_id = doc_id
+        self.spans = [span]
 
-def simple_data_row():
-    data = {'doc_id': [example_doc_id],
-            'spans': [example_spans]}
-    return pd.DataFrame(data).loc[0]
+    def build(self):
+        # this imitates the dataset from huggingface
+        data = {'doc_id': [self.doc_id],
+                'spans': [self.spans]}
+        return pd.DataFrame(data).loc[0]
+
+    def with_spans(self, spans: [{}]):
+        """
+
+        :type spans: list of span dictionaries
+        """
+        self.spans = spans
+        return self
+
+    def with_doc_id(self, doc_id: str):
+        self.doc_id = doc_id
+        return self
 
 
 class GroundingDocumentBuilder:
@@ -62,7 +48,6 @@ class GroundingDocumentBuilder:
 
 
 class SpanBuilder:
-
     def __init__(self):
         self.text = "Some generic span text serving as doc"
         self.id = 'some id'

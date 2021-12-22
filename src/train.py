@@ -18,7 +18,8 @@ class TrainedModel:
 
     def __train_model(self):
         # TODO log model config
-        return Doc2Vec(self.grounding_doc.tagged_documents,
+        documents = self.grounding_doc.tagged_documents
+        return Doc2Vec(documents,
                        vector_size=10,
                        window=4,
                        min_count=1,
