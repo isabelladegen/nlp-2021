@@ -82,15 +82,15 @@ def test_grounding_document_get_tagged_document_for_span_id():
 
     document = GroundingDocument(pd_row)
     tagged_doc1 = document.tagged_document_for(span_id1)
-    assert_that(tagged_doc1.tags, equal_to(span_id1))
+    assert_that(tagged_doc1.tags[0], equal_to(span_id1))
     assert_that(tagged_doc1.words, equal_to(preprocess_doc(text1)))
 
     tagged_doc2 = document.tagged_document_for(span_id2)
-    assert_that(tagged_doc2.tags, equal_to(span_id2))
+    assert_that(tagged_doc2.tags[0], equal_to(span_id2))
     assert_that(tagged_doc2.words, equal_to(preprocess_doc(text2)))
 
     tagged_doc3 = document.tagged_document_for(span_id3)
-    assert_that(tagged_doc3.tags, equal_to(span_id3))
+    assert_that(tagged_doc3.tags[0], equal_to(span_id3))
     assert_that(tagged_doc3.words, equal_to(preprocess_doc(text3)))
 
 
@@ -165,9 +165,9 @@ def test_grounding_document_creates_tagged_documents():
 
     tagged_documents = document.tagged_documents
     assert_that(tagged_documents, has_length(3))
-    assert_that(tagged_documents[0].tags, equal_to(span_id1))
-    assert_that(tagged_documents[1].tags, equal_to(span_id2))
-    assert_that(tagged_documents[2].tags, equal_to(span_id3))
+    assert_that(tagged_documents[0].tags[0], equal_to(span_id1))
+    assert_that(tagged_documents[1].tags[0], equal_to(span_id2))
+    assert_that(tagged_documents[2].tags[0], equal_to(span_id3))
     assert_that(tagged_documents[0].words, equal_to(preprocess_doc(text1)))
     assert_that(tagged_documents[1].words, equal_to(preprocess_doc(text2)))
     assert_that(tagged_documents[2].words, equal_to(preprocess_doc(text3)))

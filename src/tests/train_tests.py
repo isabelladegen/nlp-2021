@@ -6,23 +6,23 @@ from hamcrest import *
 
 
 def test_trains_a_model_for_a_grounding_document():
-    span_id1 = '1'
+    span_id1 = "first span id"
     text1 = 'span one with some text'
     span1 = SpanBuilder().with_id(span_id1).with_text(text1).build()
-    span_id2 = '2'
+    span_id2 = "second span id"
     text2 = 'span two and some text'
     span2 = SpanBuilder().with_id(span_id2).with_text(text2).build()
-    span_id3 = '3'
+    span_id3 = "3"
     text3 = 'span three and some text'
     span3 = SpanBuilder().with_id(span_id3).with_text(text3).build()
 
     grounding_document = GroundingDocumentBuilder().with_spans([span1, span2, span3]).build()
     trained_model = TrainedModel(grounding_document).trained_model
 
+    assert_that(len(trained_model.dv), equal_to(3))
     assert_that(trained_model.dv[span_id1], not_none())
     assert_that(trained_model.dv[span_id2], not_none())
     assert_that(trained_model.dv[span_id3], not_none())
-    assert_that(len(trained_model.dv), equal_to(3))
 
 
 def test_compare_vector_with_itself():

@@ -119,12 +119,14 @@ class GroundingDocument:
         """
         result = []
         for key, value in self.preprocessed_spans.items():
-            result.append(TaggedDocument(value, key))
+            # !!!hugely important to add the key in a list as otherwise the string will be broken up and more than \
+            # one vector will be created per document!!!
+            result.append(TaggedDocument(value, [key]))
         return result
 
     def tagged_document_for(self, span_id: str) -> TaggedDocument:
-        return next((doc for doc in self.tagged_documents if doc.tags == span_id), None)
-        # TODO  think about keeing tagged documents in a dictionary keyed in span id too
+        return next((doc for doc in self.tagged_documents if doc.tags[0] == span_id), None)
+        # TODO  think about keying tagged documents in a dictionary keyed in span id too
 
     def original_text_for_sp_id(self, span_id):
         return self.raw_spans[span_id]
