@@ -1,5 +1,5 @@
 import pandas as pd
-from src.preprocessing import GroundingDocument
+from src.preprocessing_documents import GroundingDocument
 
 
 class DocumentDatasetBuilder:

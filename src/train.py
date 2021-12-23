@@ -2,7 +2,7 @@ from typing import Dict, Any
 
 from gensim.models import KeyedVectors
 
-from src.preprocessing import GroundingDocument
+from src.preprocessing_documents import GroundingDocument
 from gensim.models.doc2vec import Doc2Vec
 
 

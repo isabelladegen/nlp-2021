@@ -1,6 +1,6 @@
 import pytest
 from src.train import TrainedModel, BatchTrainer
-from src.preprocessing import load_documents_df, grounding_documents_for_dataframe, preprocess_doc, GroundingDocument
+from src.preprocessing_documents import load_documents_df, grounding_documents_for_dataframe, preprocess_doc, GroundingDocument
 from test_utils import *
 from hamcrest import *
 
@@ -34,7 +34,7 @@ def test_predicts_the_same_vector_to_be_most_similar():
     model = TrainedModel(document)
     processed_text = preprocess_doc(text)
     most_similar = model.get_n_most_similar_vectors(processed_text, 1)
-    assert_that(most_similar[span_id], greater_than(0.0))
+    assert_that(most_similar[span_id], not_none())
     assert_that(document.original_text_for_sp_id(span_id), equal_to(text))
     assert_that(document.processed_text_for_sp_id(span_id), equal_to(processed_text))
 

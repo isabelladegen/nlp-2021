@@ -1,6 +1,6 @@
 import pytest
 from hamcrest import *
-from src.preprocessing import *
+from src.preprocessing_documents import *
 from test_utils import *
 
 
