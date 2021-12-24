@@ -1,5 +1,14 @@
 from datasets import load_dataset
 import pandas as pd
+from src.preprocessing_documents import preprocess_doc
+
+RC_ANSWERS = 'answers'
+
+RC_QUESTION = 'question'
+
+RC_DOC_ID = 'title'
+
+RC_ID = 'id'
 
 
 def load_rc_dataset(split: str):
@@ -13,12 +22,6 @@ def load_rc_dataset(split: str):
     return rc_dataset
 
 
-class RCData:
-    def __init__(self, split: str):
-        self.rc_dataset = load_rc_dataset(split)
-
-    def raw_questions_and_gold_answers(self) -> pd.DataFrame:
-        rows = []
-        for example in self.rc_dataset:
-            rows.append([example['id'], example['title'], example['question'], example['answers']])
-        return pd.DataFrame(rows, columns=["id", "doc_id", "question", "answers"])
+def preprocess_question(question: str) -> [str]:
+    # TODO test and do more processing
+    return preprocess_doc(question)

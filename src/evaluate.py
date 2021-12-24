@@ -2,7 +2,7 @@
 # 1 span, top most, all above a certain percentage, with history without history
 # input trained model & rc dataset with user questions and gold answers
 # output predictions, actual ansers, f1 scores
-from train import BatchTrainer
+from train_and_predict import BatchTrainer
 
 
 

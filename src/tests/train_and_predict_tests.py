@@ -1,6 +1,7 @@
 import pytest
-from src.train import TrainedModel, BatchTrainer
-from src.preprocessing_documents import load_documents_df, grounding_documents_for_dataframe, preprocess_doc, GroundingDocument
+from src.train_and_predict import TrainedModel, BatchTrainer
+from src.preprocessing_documents import load_documents_df, grounding_documents_for_dataframe, preprocess_doc, \
+    GroundingDocument
 from test_utils import *
 from hamcrest import *
 
@@ -39,6 +40,26 @@ def test_predicts_the_same_vector_to_be_most_similar():
     assert_that(document.processed_text_for_sp_id(span_id), equal_to(processed_text))
 
 
+def test_predicts_grounding_text_for_given_question():
+    # setup grounding doc
+    text = 'some span text'
+    span_id = 'c'
+    example_span = SpanBuilder().with_id(span_id).with_text(text).build()
+    document = GroundingDocumentBuilder().with_spans([example_span]).build()
+
+    # setup user question
+    question = "what is a span?"
+    processed_question = preprocess_doc(text)
+
+    # train model
+    model = TrainedModel(document)
+
+    # predict most likely grounding text
+    most_likely_grounding_text = model.predict_grounding_text_for(processed_question)
+
+    assert_that(most_likely_grounding_text, equal_to(text))
+
+
 def test_return_own_vector_for_most_similar_vectors():
     span_id1 = "first span id"
     text1 = 'one lets get started Paris geography'
@@ -67,7 +88,7 @@ def test_return_own_vector_for_most_similar_vectors():
     print(f'First: {most_similar_to_span_1}')
     print(f'Second: {most_similar_to_span_2}')
     print(f'Third: {most_similar_to_span_3}')
-    #TODO think abou to be able to do this with small documents if at all
+    # TODO think abou to be able to do this with small documents if at all
     # assert_that(most_similar_to_span_1[span_id1], greater_than(0.0))
     # assert_that(most_similar_to_span_2[span_id2], greater_than(0.0))
     # assert_that(most_similar_to_span_3[span_id2], greater_than(0.0))
@@ -90,3 +111,30 @@ def test_trains_a_model_for_each_document():
     # number of vectors = number of spans in grounding document
     assert_that(len(trained_model1.document_vectors()), equal_to(len(example1.raw_spans)))
     assert_that(len(trained_model2.document_vectors()), equal_to(len(example2.raw_spans)))
+
+
+def test_returns_predictions_and_references():
+    doc_id = 'doc_idx'
+    span_text = 'some span text'
+    span = SpanBuilder().with_text(span_text).build()
+    grounding_doc1 = GroundingDocumentBuilder()\
+        .with_doc_id(doc_id)\
+        .with_spans([span])\
+        .build()
+
+    # train
+    trainer = BatchTrainer([grounding_doc1])
+
+    # get predictions and gold answers
+    questions = ['question1', 'question2']
+    rc_dataset = RCDatasetBuilder()\
+        .with_doc_ids([doc_id, doc_id])\
+        .with_questions(questions)\
+        .build()
+    predictions, references = trainer.predictions_and_referenced_for(rc_dataset)
+
+    assert_that(len(predictions), equal_to(len(questions)))
+    assert_that(len(references), equal_to(len(questions)))
+    first_prediction = predictions[0]
+    assert_that(first_prediction['id'], equal_to(references[0]['id']))
+    assert_that(first_prediction['prediction_text'], equal_to(span_text))
