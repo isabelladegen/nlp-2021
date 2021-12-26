@@ -117,9 +117,9 @@ def test_returns_predictions_and_references():
     doc_id = 'doc_idx'
     span_text = 'some span text'
     span = SpanBuilder().with_text(span_text).build()
-    grounding_doc1 = GroundingDocumentBuilder()\
-        .with_doc_id(doc_id)\
-        .with_spans([span])\
+    grounding_doc1 = GroundingDocumentBuilder() \
+        .with_doc_id(doc_id) \
+        .with_spans([span]) \
         .build()
 
     # train
@@ -127,9 +127,9 @@ def test_returns_predictions_and_references():
 
     # get predictions and gold answers
     questions = ['question1', 'question2']
-    rc_dataset = RCDatasetBuilder()\
-        .with_doc_ids([doc_id, doc_id])\
-        .with_questions(questions)\
+    rc_dataset = RCDatasetBuilder() \
+        .with_doc_ids([doc_id, doc_id]) \
+        .with_questions(questions) \
         .build()
     predictions, references = trainer.predictions_and_referenced_for(rc_dataset)
 
