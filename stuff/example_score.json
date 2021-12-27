@@ -1,0 +1,12 @@
+{
+  'exact': 100.0,
+  'f1': 100.0,
+  'total': 1,
+  'HasAns_exact': 100.0,
+  'HasAns_f1': 100.0,
+  'HasAns_total': 1,
+  'best_exact': 100.0,
+  'best_exact_thresh': 0.0,
+  'best_f1': 100.0,
+  'best_f1_thresh': 0.0
+}

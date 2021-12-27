@@ -131,7 +131,7 @@ def test_returns_predictions_and_references():
         .with_doc_ids([doc_id, doc_id]) \
         .with_questions(questions) \
         .build()
-    predictions, references = trainer.predictions_and_referenced_for(rc_dataset)
+    predictions, references = trainer.predict_answers_for(rc_dataset)
 
     assert_that(len(predictions), equal_to(len(questions)))
     assert_that(len(references), equal_to(len(questions)))

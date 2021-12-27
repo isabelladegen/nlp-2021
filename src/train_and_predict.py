@@ -7,6 +7,7 @@ from src.preprocessing_documents import GroundingDocument
 from gensim.models.doc2vec import Doc2Vec
 from src.preprocessing_rc import *
 from datasets import Dataset
+from evaluate import PredictionsEvaluation
 
 
 class TrainedModel:
@@ -61,32 +62,22 @@ class BatchTrainer:
             result[doc.id] = TrainedModel(doc)
         return result
 
-    def predictions_and_referenced_for(self, rc_dataset: Dataset):
-        predictions = []
-        references = []
+    def predict_answers_for(self, rc_dataset: Dataset) -> PredictionsEvaluation:
+        predictions_evaluation = PredictionsEvaluation()
         for row in rc_dataset:
-            # process question
-            question = preprocess_question(row[RC_QUESTION])
+            prediction_id = row[RC_ID]
+            question_ = row[RC_QUESTION]
             doc_id = row[RC_DOC_ID]
+            gold_answer = row[RC_ANSWERS]
 
+            # process question
+            preprocessed_question = preprocess_question(question_)
             # get trained model
             model = self.model_for_doc_id(doc_id)
-            most_likely_answer = model.predict_grounding_text_for(question)
+            # get prediction
+            most_likely_answer = model.predict_grounding_text_for(preprocessed_question)
 
-            id_ = row["id"]
-            predictions.append(
-                {'id': id_,
-                 'prediction_text':
-                     most_likely_answer,
-                 'no_answer_probability': 0.0
-                 }
-            )
+            # for evaluation combine predicted answer and gold answer
+            predictions_evaluation.add(prediction_id, most_likely_answer, gold_answer)
 
-            # just using their answers
-            references.append(
-                {
-                    "id": id_,
-                    "answers": row["answers"],
-                }
-            )
-        return predictions, references
+        return predictions_evaluation
