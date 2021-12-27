@@ -1,5 +1,4 @@
 from datasets import load_dataset
-import pandas as pd
 from src.preprocessing_documents import preprocess_doc
 
 RC_ANSWERS = 'answers'

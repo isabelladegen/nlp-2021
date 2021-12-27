@@ -1,13 +1,12 @@
-from typing import Dict, Any
+from typing import Any
 
-import pandas as pd
 from gensim.models import KeyedVectors
 
 from src.preprocessing_documents import GroundingDocument
 from gensim.models.doc2vec import Doc2Vec
 from src.preprocessing_rc import *
 from datasets import Dataset
-from evaluate import PredictionsEvaluation
+from src.evaluate import PredictionsEvaluation
 
 
 class TrainedModel:

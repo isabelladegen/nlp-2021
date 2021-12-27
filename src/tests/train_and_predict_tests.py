@@ -1,7 +1,5 @@
-import pytest
 from src.train_and_predict import TrainedModel, BatchTrainer
-from src.preprocessing_documents import load_documents_df, grounding_documents_for_dataframe, preprocess_doc, \
-    GroundingDocument
+from src.preprocessing_documents import load_documents_df, grounding_documents_for_dataframe
 from test_utils import *
 from hamcrest import *
 
@@ -131,10 +129,6 @@ def test_returns_predictions_and_references():
         .with_doc_ids([doc_id, doc_id]) \
         .with_questions(questions) \
         .build()
-    predictions, references = trainer.predict_answers_for(rc_dataset)
+    prediction_evaluation = trainer.predict_answers_for(rc_dataset)
 
-    assert_that(len(predictions), equal_to(len(questions)))
-    assert_that(len(references), equal_to(len(questions)))
-    first_prediction = predictions[0]
-    assert_that(first_prediction['id'], equal_to(references[0]['id']))
-    assert_that(first_prediction['prediction_text'], equal_to(span_text))
+    assert_that(len(prediction_evaluation.predictions), equal_to(len(questions)))

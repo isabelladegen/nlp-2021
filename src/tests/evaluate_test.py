@@ -1,38 +1,6 @@
 from hamcrest import *
 from src.evaluate import PredictionsEvaluation
-
-
-class ReferenceAnswerBuilder:
-    id: str
-    answer_text: str
-    answer_start: int
-
-    def __init__(self):
-        self.answer_start = 12345
-        self.answer_text = "Answer text"
-        self.id = 'some id'
-
-    def build(self):
-        squad2_metric_answer = {
-            'id': self.id,
-            'answers': {
-                'text': [
-                    self.answer_text
-                ],
-                'answer_start': [
-                    self.answer_start
-                ]
-            }
-        }
-        return squad2_metric_answer
-
-    def with_id(self, answer_id):
-        self.id = answer_id
-        return self
-
-    def with_text(self, answer_text):
-        self.answer_text = answer_text
-        return self
+from test_utils import *
 
 
 def test_returns_full_score_for_predicting_gold_answer():
@@ -137,24 +105,3 @@ def test_returns_full_score_for_predicting_all_gold_answers():
     assert_that(score['total'], len(predictions_evaluation.predictions))
     assert_that(score['f1'], equal_to(100.0))
     assert_that(score['exact'], equal_to(100.0))
-
-
-def test_returns_score():
-    print("please implement")
-    # 1. Train models
-    #    - pre process document data -> Grounding Docs
-    #    - tune model parameters -> Batch Trainer
-    #    DATA: Documents dataset
-    #
-    # 2. Predict rc question
-    #    - pre process rc question -> RCData
-    #    - predict answers and create predictions and references -> BatchTrainer
-    #    DATA: RC dataset
-    #
-    # 3. Evaluate results
-    #    - Squad 2 metrics -> Evaluate
-
-    # trainer = BatchTrainer(bla)
-    # trainer.pre
-    # rc_dataset =
-    # Prediction()
