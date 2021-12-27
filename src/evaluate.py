@@ -15,7 +15,12 @@ class PredictionsEvaluation:
              }
         )
 
-        self.references.append(gold_answer)
+        self.references.append(
+            {
+                "id": prediction_id,
+                "answers": gold_answer,
+            }
+        )
 
     def squad2_score(self) -> [dict]:
         metric = load_metric("squad_v2")

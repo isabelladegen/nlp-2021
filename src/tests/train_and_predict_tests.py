@@ -124,11 +124,12 @@ def test_returns_predictions_and_references():
     trainer = BatchTrainer([grounding_doc1])
 
     # get predictions and gold answers
-    questions = ['question1', 'question2']
-    rc_dataset = RCDatasetBuilder() \
-        .with_doc_ids([doc_id, doc_id]) \
-        .with_questions(questions) \
-        .build()
+    rc_dataset = RCDatasetBuilder().with_doc_ids([doc_id, doc_id]).build()
     prediction_evaluation = trainer.predict_answers_for(rc_dataset)
 
-    assert_that(len(prediction_evaluation.predictions), equal_to(len(questions)))
+    ids = rc_dataset[RC_ID]
+    predictions = prediction_evaluation.predictions
+    references = prediction_evaluation.references
+    assert_that(len(predictions), equal_to(len(ids)))
+    assert_that(predictions[0]['id'], equal_to(ids[0]))
+    assert_that(references[0]['id'], equal_to(ids[0]))
