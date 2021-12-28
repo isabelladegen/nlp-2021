@@ -2,7 +2,7 @@ from datasets import load_metric
 
 
 class PredictionsEvaluation:
-    def  __init__(self):
+    def __init__(self):
         self.predictions = []
         self.references = []
 

@@ -7,6 +7,7 @@ from gensim.models.doc2vec import Doc2Vec
 from src.preprocessing_rc import *
 from datasets import Dataset
 from src.evaluate import PredictionsEvaluation
+import random
 
 
 class TrainedModel:
@@ -78,5 +79,20 @@ class BatchTrainer:
 
             # for evaluation combine predicted answer and gold answer
             predictions_evaluation.add(prediction_id, most_likely_answer, gold_answer)
+
+        return predictions_evaluation
+
+    def predict_random_spans_for(self, rc_dataset: Dataset) -> PredictionsEvaluation:
+        predictions_evaluation = PredictionsEvaluation()
+        for row in rc_dataset:
+            prediction_id = row[RC_ID]
+            doc_id = row[RC_DOC_ID]
+            gold_answer = row[RC_ANSWERS]
+
+            # pick random span
+            model = self.model_for_doc_id(doc_id)
+            spans = list(model.grounding_doc.raw_spans.values())
+            random_answer = random.choice(spans)
+            predictions_evaluation.add(prediction_id, random_answer, gold_answer)
 
         return predictions_evaluation

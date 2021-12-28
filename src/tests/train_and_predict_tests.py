@@ -112,24 +112,74 @@ def test_trains_a_model_for_each_document():
 
 
 def test_returns_predictions_and_references():
-    doc_id = 'doc_idx'
-    span_text = 'some span text'
-    span = SpanBuilder().with_text(span_text).build()
-    grounding_doc1 = GroundingDocumentBuilder() \
-        .with_doc_id(doc_id) \
-        .with_spans([span]) \
+    span_id1 = "first span id"
+    text1 = 'one lets get started Paris geography'
+    span1 = SpanBuilder().with_id(span_id1).with_text(text1).build()
+    span_id2 = "second span id"
+    text2 = 'two powerful'
+    span2 = SpanBuilder().with_id(span_id2).with_text(text2).build()
+    span_id3 = "3"
+    text3 = 'three something totally different'
+    span3 = SpanBuilder().with_id(span_id3).with_text(text3).build()
+    grounding_document = GroundingDocumentBuilder().with_spans([span1, span2, span3]).build()
+
+    rc_dataset = RCDatasetBuilder() \
+        .with_question_answer("rcId1", grounding_document.id, "Paris question", text1) \
+        .with_question_answer("rcId2", grounding_document.id, "Power question", text2) \
+        .with_question_answer("rcId3", grounding_document.id, "Different question", text3) \
+        .with_question_answer("rcId4", grounding_document.id, "Another question", text3) \
         .build()
 
     # train
-    trainer = BatchTrainer([grounding_doc1])
+    trainer = BatchTrainer([grounding_document])
 
     # get predictions and gold answers
-    rc_dataset = RCDatasetBuilder().with_doc_ids([doc_id, doc_id]).build()
     prediction_evaluation = trainer.predict_answers_for(rc_dataset)
 
     ids = rc_dataset[RC_ID]
     predictions = prediction_evaluation.predictions
     references = prediction_evaluation.references
-    assert_that(len(predictions), equal_to(len(ids)))
+    assert_that(len(predictions), equal_to(rc_dataset.num_rows))
+    assert_that(len(references), equal_to(rc_dataset.num_rows))
     assert_that(predictions[0]['id'], equal_to(ids[0]))
-    assert_that(references[0]['id'], equal_to(ids[0]))
+    assert_that(references[1]['id'], equal_to(ids[1]))
+    assert_that(references[2]['id'], equal_to(ids[2]))
+    assert_that(references[3]['id'], equal_to(ids[3]))
+
+
+def test_predicts_random_span_for_a_document():
+    span_id1 = "first span id"
+    text1 = 'one lets get started Paris geography'
+    span1 = SpanBuilder().with_id(span_id1).with_text(text1).build()
+    span_id2 = "second span id"
+    text2 = 'two powerful'
+    span2 = SpanBuilder().with_id(span_id2).with_text(text2).build()
+    span_id3 = "3"
+    text3 = 'three something totally different'
+    span3 = SpanBuilder().with_id(span_id3).with_text(text3).build()
+    grounding_document = GroundingDocumentBuilder().with_spans([span1, span2, span3]).build()
+
+    rc_dataset = RCDatasetBuilder() \
+        .with_question_answer("rcId1", grounding_document.id, "Paris question", text1) \
+        .with_question_answer("rcId2", grounding_document.id, "Power question", text2) \
+        .with_question_answer("rcId3", grounding_document.id, "Different question", text3) \
+        .with_question_answer("rcId4", grounding_document.id, "Another question", text3) \
+        .build()
+
+    trainer = BatchTrainer([grounding_document])
+    random_predictions = trainer.predict_random_spans_for(rc_dataset)
+
+    assert_that(len(random_predictions.predictions), equal_to(rc_dataset.num_rows))
+    assert_that(len(random_predictions.references), equal_to(rc_dataset.num_rows))
+    # noinspection PyTypeChecker
+    assert_that(list(grounding_document.raw_spans.values()),
+                has_item(random_predictions.predictions[0]['prediction_text']))
+    # noinspection PyTypeChecker
+    assert_that(list(grounding_document.raw_spans.values()),
+                has_item(random_predictions.predictions[1]['prediction_text']))
+    # noinspection PyTypeChecker
+    assert_that(list(grounding_document.raw_spans.values()),
+                has_item(random_predictions.predictions[2]['prediction_text']))
+    # noinspection PyTypeChecker
+    assert_that(list(grounding_document.raw_spans.values()),
+                has_item(random_predictions.predictions[3]['prediction_text']))

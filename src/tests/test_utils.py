@@ -80,6 +80,29 @@ class SpanBuilder:
 
 class RCDatasetBuilder:
     def __init__(self):
+        self.ids = []
+        self.doc_ids = []
+        self.questions = []
+        self.answers = []
+
+    def build(self) -> Dataset:
+        if not self.ids:
+            self.__create_default_data()
+        data = {RC_ID: self.ids,
+                RC_DOC_ID: self.doc_ids,
+                RC_QUESTION: self.questions,
+                RC_ANSWERS: self.answers
+                }
+        return Dataset.from_dict(data)
+
+    def with_question_answer(self, question_id, document_id, question_text, answer_text):
+        self.ids.append(question_id)
+        self.doc_ids.append(document_id)
+        self.questions.append(question_text)
+        self.answers.append(ReferenceAnswerBuilder().with_id(question_id).with_text(answer_text).build())
+        return self
+
+    def __create_default_data(self):
         id1 = '1'
         id2 = '2'
         self.ids = [id1, id2]
@@ -88,18 +111,6 @@ class RCDatasetBuilder:
         answer1 = ReferenceAnswerBuilder().with_id(id1).with_text("this is the answer to question 1").build()
         answer2 = ReferenceAnswerBuilder().with_id(id2).with_text("this is the answer to question 2").build()
         self.answers = [answer1, answer2]
-
-    def build(self) -> Dataset:
-        data = {RC_ID: self.ids,
-                RC_DOC_ID: self.doc_ids,
-                RC_QUESTION: self.questions,
-                RC_ANSWERS: self.answers
-                }
-        return Dataset.from_dict(data)
-
-    def with_doc_ids(self, doc_ids: [str]):
-        self.doc_ids = doc_ids
-        return self
 
 
 class ReferenceAnswerBuilder:
