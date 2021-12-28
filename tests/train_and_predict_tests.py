@@ -102,7 +102,7 @@ def test_trains_a_model_for_each_document():
     # test models for two different grounding documents
     example1 = grounding_documents[5]
     example2 = grounding_documents[2]
-    trainer = BatchTrainer(grounding_documents)
+    trainer = BatchTrainer(grounding_documents, config_params)
     trained_model1 = trainer.model_for_doc_id(example1.id)
     trained_model2 = trainer.model_for_doc_id(example2.id)
 
@@ -131,7 +131,7 @@ def test_returns_predictions_and_references():
         .build()
 
     # train
-    trainer = BatchTrainer([grounding_document])
+    trainer = BatchTrainer([grounding_document], config_params)
 
     # get predictions and gold answers
     prediction_evaluation = trainer.predict_answers_for(rc_dataset)
@@ -166,7 +166,7 @@ def test_predicts_random_span_for_a_document():
         .with_question_answer("rcId4", grounding_document.id, "Another question", text3) \
         .build()
 
-    trainer = BatchTrainer([grounding_document])
+    trainer = BatchTrainer([grounding_document], config_params)
     random_predictions = trainer.predict_random_spans_for(rc_dataset)
 
     assert_that(len(random_predictions.predictions), equal_to(rc_dataset.num_rows))

@@ -27,8 +27,9 @@ def load_documents_df(config: dict = None):
     document_dataset = load_dataset(
         config['dataset_name'],
         name=config['document_data_name'],
-        split=config['training_split'],
+        split="train",  # there is no other split
         ignore_verifications=config['data_ignore_verifications'],
+        keep_in_memory=config['keep_in_memory'],
         cache_dir=config['data_cache_dir']
     )
     document = pd.DataFrame(data=document_dataset)

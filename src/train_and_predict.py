@@ -6,6 +6,7 @@ from gensim.models.doc2vec import Doc2Vec
 from src.preprocessing_documents import GroundingDocument
 from src.preprocessing_rc import *
 from src.evaluate import PredictionsEvaluation
+from src.parameters import *
 
 
 class TrainedModel:
@@ -13,21 +14,23 @@ class TrainedModel:
     grounding_doc: GroundingDocument
     trained_model: Doc2Vec
 
-    def __init__(self, grounding_doc: GroundingDocument):
+    def __init__(self, grounding_doc: GroundingDocument, hyperparams=None):
+        if not hyperparams:
+            hyperparams = config_params
+        self.hyperparams = hyperparams
         self.grounding_doc = grounding_doc
         self.id = grounding_doc.id
         self.trained_model = self.__train_model()
 
     def __train_model(self):
-        # TODO log model config
         documents = self.grounding_doc.tagged_documents
         return Doc2Vec(documents,
-                       vector_size=10,
-                       window=4,
-                       min_count=1,
-                       workers=4,
-                       dm=1,
-                       epochs=30)
+                       vector_size=self.hyperparams['vector_size'],
+                       window=self.hyperparams['window'],
+                       min_count=self.hyperparams['min_count'],
+                       workers=self.hyperparams['workers'],
+                       dm=self.hyperparams['dm'],
+                       epochs=self.hyperparams['epochs'])
 
     def document_vectors(self) -> KeyedVectors:
         return self.trained_model.dv
@@ -47,7 +50,10 @@ class BatchTrainer:
     trainedModels: dict[str, TrainedModel]
     grounding_docs: [GroundingDocument]
 
-    def __init__(self, grounding_docs: [GroundingDocument]):
+    def __init__(self, grounding_docs: [GroundingDocument], hyperparams=None):
+        if not hyperparams:
+            hyperparams = config_params
+        self.hyperparams = hyperparams
         self.grounding_docs = grounding_docs
         self.trainedModels = self.__trained_models()
 
@@ -57,7 +63,7 @@ class BatchTrainer:
     def __trained_models(self) -> dict[Any, TrainedModel]:
         result: dict[Any, TrainedModel] = {}
         for doc in self.grounding_docs:
-            result[doc.id] = TrainedModel(doc)
+            result[doc.id] = TrainedModel(doc, self.hyperparams)
         return result
 
     def predict_answers_for(self, rc_dataset: Dataset) -> PredictionsEvaluation:

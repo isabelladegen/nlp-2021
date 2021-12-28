@@ -19,16 +19,16 @@ df = load_documents_df(config_params)
 grounding_documents = grounding_documents_for_dataframe(df)
 
 # train a model for each grounding document
-trainer = BatchTrainer(grounding_documents)
+trainer = BatchTrainer(grounding_documents, config_params)
 
-train_predictions = trainer.predict_answers_for(load_rc_dataset("train"))
+train_predictions = trainer.predict_answers_for(load_rc_dataset("train", config_params))
 
 train_score = train_predictions.squad2_score()
 
-validation_predictions = trainer.predict_answers_for(load_rc_dataset("validation"))
+validation_predictions = trainer.predict_answers_for(load_rc_dataset("validation", config_params,))
 validation_score = validation_predictions.squad2_score()
 
-random_validation_predictions = trainer.predict_random_spans_for(load_rc_dataset("validation"))
+random_validation_predictions = trainer.predict_random_spans_for(load_rc_dataset("validation", config_params))
 random_validation_score = validation_predictions.squad2_score()
 
 wandb.log({
