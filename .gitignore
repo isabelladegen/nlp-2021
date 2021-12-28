@@ -6,9 +6,13 @@ data_cache_doc2vec_notebook/
 data_cache_doc2vec_solution_notebook/
 data_cache_doc2vec_solution_spans_notebook/
 notebooks/data_cache_src/
-src/tests/data_cache_src/
+tests/data_cache_src/
+data_cache_src/
 .DS_Store
 papers/
+
+#weight and biases
+wandb/
 
 #LaTeX
 *.aux

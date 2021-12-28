@@ -1,13 +1,11 @@
 from typing import Any
-
-from gensim.models import KeyedVectors
-
-from src.preprocessing_documents import GroundingDocument
-from gensim.models.doc2vec import Doc2Vec
-from src.preprocessing_rc import *
 from datasets import Dataset
-from src.evaluate import PredictionsEvaluation
 import random
+from gensim.models import KeyedVectors
+from gensim.models.doc2vec import Doc2Vec
+from src.preprocessing_documents import GroundingDocument
+from src.preprocessing_rc import *
+from src.evaluate import PredictionsEvaluation
 
 
 class TrainedModel:

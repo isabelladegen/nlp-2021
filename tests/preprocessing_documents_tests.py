@@ -1,6 +1,6 @@
 from hamcrest import *
 from src.preprocessing_documents import *
-from test_utils import *
+from tests.utils.test_utils import *
 
 
 def test_load_documents_df():

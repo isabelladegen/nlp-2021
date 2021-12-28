@@ -1,7 +1,7 @@
 import pandas as pd
+from datasets import Dataset
 from src.preprocessing_documents import GroundingDocument
 from src.preprocessing_rc import *
-from datasets import Dataset
 
 
 class DocumentDatasetBuilder:

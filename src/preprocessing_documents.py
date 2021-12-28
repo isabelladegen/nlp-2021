@@ -13,16 +13,6 @@ from gensim.utils import simple_preprocess
 import pandas as pd
 
 
-# import hydra
-# from omegaconf import DictConfig, OmegaConf
-#
-# @hydra.main(config_path="conf", config_name="config")
-# def my_app(cfg : DictConfig) -> None:
-#     print(OmegaConf.to_yaml(cfg))
-#
-# if __name__ == "__main__":
-#     my_app()
-
 def load_documents_df(split: str):
     """
     Load document dataset from huggingface into df

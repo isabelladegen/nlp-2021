@@ -1,6 +1,6 @@
 from hamcrest import *
 from src.evaluate import PredictionsEvaluation
-from test_utils import *
+from tests.utils.test_utils import *
 
 
 def test_returns_full_score_for_predicting_gold_answer():

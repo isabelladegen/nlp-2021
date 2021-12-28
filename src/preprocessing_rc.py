@@ -2,11 +2,8 @@ from datasets import load_dataset
 from src.preprocessing_documents import preprocess_doc
 
 RC_ANSWERS = 'answers'
-
 RC_QUESTION = 'question'
-
 RC_DOC_ID = 'title'
-
 RC_ID = 'id'
 
 

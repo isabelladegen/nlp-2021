@@ -1,6 +1,6 @@
 from src.train_and_predict import TrainedModel, BatchTrainer
 from src.preprocessing_documents import load_documents_df, grounding_documents_for_dataframe
-from test_utils import *
+from tests.utils.test_utils import *
 from hamcrest import *
 
 

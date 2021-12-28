@@ -1,5 +1,9 @@
 from datasets import load_metric
 
+SCORE_EXACT = 'exact'
+SCORE_F1 = 'f1'
+SCORE_NUMBER_OF_QUESTIONS = 'total'
+
 
 class PredictionsEvaluation:
     def __init__(self):
