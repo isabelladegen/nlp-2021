@@ -89,7 +89,7 @@ class BatchTrainer:
 
             # pick random span
             model = self.model_for_doc_id(doc_id)
-            spans = list(model.grounding_doc.raw_spans.values())
+            spans = list(model.grounding_doc.raw_docs.values())
             random_answer = random.choice(spans)
             predictions_evaluation.add(prediction_id, random_answer, gold_answer)
 

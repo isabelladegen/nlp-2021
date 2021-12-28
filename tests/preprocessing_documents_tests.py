@@ -4,7 +4,7 @@ from tests.utils.test_utils import *
 
 
 def test_load_documents_df():
-    data = load_documents_df("train")
+    data = load_documents_df()
     assert data.shape == (488, 3), ''
 
 
@@ -54,7 +54,7 @@ def test_grounding_document_reads_spans_for_each_doc():
 
     document = GroundingDocument(pd_row)
 
-    raw_spans = document.raw_spans
+    raw_spans = document.raw_docs
     assert_that(document.id, equal_to(doc_id))
     assert_that(raw_spans, has_length(3))
     assert_that(raw_spans[span_id1], equal_to(text1))
@@ -173,7 +173,7 @@ def test_grounding_document_creates_tagged_documents():
 
 
 def test_get_grounding_documents_for_huggingface_document_dataset():
-    df = load_documents_df("train")
+    df = load_documents_df()
     example_row = df.loc[100]
 
     grounding_documents = grounding_documents_for_dataframe(df)
@@ -181,4 +181,4 @@ def test_get_grounding_documents_for_huggingface_document_dataset():
 
     example_grounding_doc = grounding_documents[100]
     assert_that(example_grounding_doc.id, equal_to(example_row['doc_id']))
-    assert_that(len(example_grounding_doc.raw_spans), equal_to(len(example_row['spans'])))
+    assert_that(len(example_grounding_doc.raw_docs), equal_to(len(example_row['spans'])))

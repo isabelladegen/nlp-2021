@@ -3,20 +3,17 @@ from src.preprocessing_documents import load_documents_df, grounding_documents_f
 from src.preprocessing_rc import load_rc_dataset
 from src.train_and_predict import BatchTrainer
 from src.evaluate import *
-
-config = dict(
-    document_dataset_split="train"
-)
+from src.parameters import *
 
 wandb.init(
     project="test",
     notes="figure out what to log and configure",
-    tags=["simple"],
-    config=config,
+    tags=["simple", "more logs and configs"],
+    config=config_params
 )
 
 # load document data for training
-df = load_documents_df(config['document_dataset_split'])
+df = load_documents_df(config_params)
 
 # pre-process grounding documents ready for training
 grounding_documents = grounding_documents_for_dataframe(df)

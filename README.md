@@ -20,7 +20,3 @@ Assuming you're using conda you can run the following commands:
     `conda env export -n nlp-2021 -f environment.yml --from-history --no-builds`
 
 *check flags as they are supposed to get rid of architecture dependent dependencies and unnecessary version forcing*
-
-## Run a wand experiment
-
-In root directory run ` python -m src.run_experiment.py`

@@ -76,12 +76,12 @@ def test_return_own_vector_for_most_similar_vectors():
     processed_text1 = preprocess_doc(text1)
     most_similar_to_span_1 = trained_model.get_n_most_similar_vectors(processed_text1, n)
     three_most_similar_to_span_1 = trained_model.get_n_most_similar_vectors(processed_text1,
-                                                                            len(grounding_document.raw_spans))
+                                                                            len(grounding_document.raw_docs))
     most_similar_to_span_2 = trained_model.get_n_most_similar_vectors(preprocess_doc(text2), n)
     most_similar_to_span_3 = trained_model.get_n_most_similar_vectors(preprocess_doc(text3), n)
 
     assert_that(len(most_similar_to_span_1), equal_to(n))
-    assert_that(len(three_most_similar_to_span_1), equal_to(len(grounding_document.raw_spans)))
+    assert_that(len(three_most_similar_to_span_1), equal_to(len(grounding_document.raw_docs)))
     # returns vector for span 1
     print(f'First: {most_similar_to_span_1}')
     print(f'Second: {most_similar_to_span_2}')
@@ -93,7 +93,7 @@ def test_return_own_vector_for_most_similar_vectors():
 
 
 def test_trains_a_model_for_each_document():
-    df = load_documents_df("train")
+    df = load_documents_df()
     smaller_dataset = df.head(10)
 
     grounding_documents = grounding_documents_for_dataframe(smaller_dataset)
@@ -107,8 +107,8 @@ def test_trains_a_model_for_each_document():
     trained_model2 = trainer.model_for_doc_id(example2.id)
 
     # number of vectors = number of spans in grounding document
-    assert_that(len(trained_model1.document_vectors()), equal_to(len(example1.raw_spans)))
-    assert_that(len(trained_model2.document_vectors()), equal_to(len(example2.raw_spans)))
+    assert_that(len(trained_model1.document_vectors()), equal_to(len(example1.raw_docs)))
+    assert_that(len(trained_model2.document_vectors()), equal_to(len(example2.raw_docs)))
 
 
 def test_returns_predictions_and_references():
@@ -172,14 +172,14 @@ def test_predicts_random_span_for_a_document():
     assert_that(len(random_predictions.predictions), equal_to(rc_dataset.num_rows))
     assert_that(len(random_predictions.references), equal_to(rc_dataset.num_rows))
     # noinspection PyTypeChecker
-    assert_that(list(grounding_document.raw_spans.values()),
+    assert_that(list(grounding_document.raw_docs.values()),
                 has_item(random_predictions.predictions[0]['prediction_text']))
     # noinspection PyTypeChecker
-    assert_that(list(grounding_document.raw_spans.values()),
+    assert_that(list(grounding_document.raw_docs.values()),
                 has_item(random_predictions.predictions[1]['prediction_text']))
     # noinspection PyTypeChecker
-    assert_that(list(grounding_document.raw_spans.values()),
+    assert_that(list(grounding_document.raw_docs.values()),
                 has_item(random_predictions.predictions[2]['prediction_text']))
     # noinspection PyTypeChecker
-    assert_that(list(grounding_document.raw_spans.values()),
+    assert_that(list(grounding_document.raw_docs.values()),
                 has_item(random_predictions.predictions[3]['prediction_text']))
