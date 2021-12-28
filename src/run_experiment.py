@@ -1,19 +1,20 @@
 import wandb
+
+import src.parameters
 from src.preprocessing_documents import load_documents_df, grounding_documents_for_dataframe
 from src.preprocessing_rc import load_rc_dataset
 from src.train_and_predict import BatchTrainer
 from src.evaluate import *
-from src.parameters import *
 
 wandb.init(
     project="test",
     notes="figure out what to log and configure",
     tags=["simple", "more logs and configs"],
-    config=config_params
+    config=src.parameters.config_params
 )
 
 # load document data for training
-df = load_documents_df(config_params)
+df = load_documents_df(wandb.config)
 
 # pre-process grounding documents ready for training
 grounding_documents = grounding_documents_for_dataframe(df)
@@ -21,14 +22,14 @@ grounding_documents = grounding_documents_for_dataframe(df)
 # train a model for each grounding document
 trainer = BatchTrainer(grounding_documents, config_params)
 
-train_predictions = trainer.predict_answers_for(load_rc_dataset("train", config_params))
+train_predictions = trainer.predict_answers_for(load_rc_dataset("train", wandb.config))
 
 train_score = train_predictions.squad2_score()
 
-validation_predictions = trainer.predict_answers_for(load_rc_dataset("validation", config_params,))
+validation_predictions = trainer.predict_answers_for(load_rc_dataset("validation", wandb.config))
 validation_score = validation_predictions.squad2_score()
 
-random_validation_predictions = trainer.predict_random_spans_for(load_rc_dataset("validation", config_params))
+random_validation_predictions = trainer.predict_random_spans_for(load_rc_dataset("validation", wandb.config))
 random_validation_score = validation_predictions.squad2_score()
 
 wandb.log({
