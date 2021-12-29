@@ -1,4 +1,11 @@
 from dataclasses import dataclass, asdict
+import enum
+
+
+# creating enumerations using class
+class QuestionPreProcessing(enum.Enum):
+    default = 0
+    user_question_only = 1  # provide no context just the user question
 
 
 @dataclass
@@ -22,6 +29,9 @@ class Configuration:
     random_answers_rc_split: str = 'train'
     sweep_rc_split: str = 'train[:10%]'
 
+    # preprocess user questions
+    pre_process_rc_question: int = QuestionPreProcessing.default.value
+
     # Doc2Vec model parameters
     vector_size: int = 30
     window: int = 4
@@ -32,21 +42,3 @@ class Configuration:
 
     def as_dict(self):
         return asdict(self)
-
-
-config_params = dict(
-    # Dataset Params
-    dataset_name="doc2dial",
-    document_data_name="document_domain",
-    rc_data="doc2dial_rc",
-    data_ignore_verifications=True,
-    data_cache_dir="./data_cache_src",
-    keep_in_memory=True,
-    # Model Params
-    vector_size=10,
-    window=4,
-    min_count=1,
-    workers=4,
-    dm=1,
-    epochs=30
-)
