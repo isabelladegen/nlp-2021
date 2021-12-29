@@ -26,7 +26,6 @@ trainer = BatchTrainer(grounding_documents, wandb.config)
 wand_config = Configuration(**wandb.config)
 
 train_predictions = trainer.predict_answers_for(load_rc_dataset(wand_config.predict_answers_rc_split, wandb.config))
-
 train_score = train_predictions.squad2_score()
 
 validation_predictions = trainer.predict_answers_for(
@@ -35,7 +34,7 @@ validation_score = validation_predictions.squad2_score()
 
 random_validation_predictions = trainer.predict_random_spans_for(
     load_rc_dataset(wand_config.random_answers_rc_split, wandb.config))
-random_validation_score = validation_predictions.squad2_score()
+random_validation_score = random_validation_predictions.squad2_score()
 
 wandb.log({
     SCORE_EXACT: train_score[SCORE_EXACT],
