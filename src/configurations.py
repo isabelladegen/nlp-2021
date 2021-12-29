@@ -33,12 +33,12 @@ class Configuration:
     pre_process_rc_question: int = QuestionPreProcessing.default.value
 
     # Doc2Vec model parameters
-    vector_size: int = 30
+    vector_size: int = 80
     window: int = 4
     min_count: int = 1
     workers: int = 4
     dm: int = 0
-    epochs: int = 50
+    epochs: int = 100
 
     def as_dict(self):
         return asdict(self)
