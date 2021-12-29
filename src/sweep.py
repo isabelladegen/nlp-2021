@@ -23,7 +23,7 @@ if __name__ == '__main__':
         'name': 'test',
         'method': 'bayes',
         'metric': {
-            'goal': 'maximise',
+            'goal': 'maximize',
             'name': SCORE_F1
         },
         'parameters': {

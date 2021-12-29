@@ -10,8 +10,7 @@ def train():
         project="test",
         notes="increase vector size",
         tags=["don't train on all docs", "simple", "bigger vector", "more epochs"],
-        config=Configuration().as_dict(),
-        magic=True
+        config=Configuration().as_dict()
     )
 
     # load document data for training
@@ -24,7 +23,7 @@ def train():
     rc_dataset = load_rc_dataset(wand_config.sweep_rc_split, wandb.config)
 
     # pre-process grounding documents ready for training only for the doc ids in the rc_dataset
-    grounding_documents = grounding_documents_for_dataframe(df, set(rc_dataset['doc_id']))
+    grounding_documents = grounding_documents_for_dataframe(df, set(rc_dataset['title']))
 
     # train a model for each grounding document
     trainer = BatchTrainer(grounding_documents, wandb.config)
