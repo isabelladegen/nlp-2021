@@ -40,5 +40,8 @@ class Configuration:
     dm: int = 0
     epochs: int = 100
 
+    # predictions parameters
+    number_of_most_likely_docs: int = 1
+
     def as_dict(self):
         return asdict(self)

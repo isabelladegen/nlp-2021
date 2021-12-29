@@ -1,7 +1,8 @@
+from hamcrest import *
 from src.train_and_predict import TrainedModel, BatchTrainer
 from src.preprocessing_documents import load_documents_df, grounding_documents_for_dataframe
-from tests.utils.test_utils import *
-from hamcrest import *
+from src.configurations import Configuration
+from utils.test_utils import *
 
 
 def test_trains_a_model_for_a_grounding_document():
@@ -47,7 +48,7 @@ def test_predicts_grounding_text_for_given_question():
 
     # setup user question
     question = "what is a span?"
-    processed_question = preprocess_doc(text)
+    processed_question = preprocess_doc(question)
 
     # train model
     model = TrainedModel(document)
@@ -56,6 +57,31 @@ def test_predicts_grounding_text_for_given_question():
     most_likely_grounding_text = model.predict_grounding_text_for(processed_question)
 
     assert_that(most_likely_grounding_text, equal_to(text))
+
+
+def test_predicts_n_grounding_texts_for_a_given_question_sorted_by_span_id():
+    # setup grounding doc
+    span_text1 = 'Some span text.'
+    span_id1 = 'span2'
+    span1 = SpanBuilder().with_id(span_id1).with_text(span_text1).build()
+    span_text2 = 'Some new span that could be returned too as likely.'
+    span_id2 = 'span1'
+    span2 = SpanBuilder().with_id(span_id2).with_text(span_text2).build()
+    document = GroundingDocumentBuilder().with_spans([span1, span2]).build()
+
+    # setup user question
+    question = "what is a span?"
+    processed_question = preprocess_doc(question)
+
+    # train model
+    config = Configuration()
+    config.number_of_most_likely_docs = 2
+    model = TrainedModel(document, config)
+
+    # predict most likely grounding text
+    most_likely_grounding_text = model.predict_grounding_text_for(processed_question)
+
+    assert_that(most_likely_grounding_text, equal_to(span_text2 + ' '+ span_text1))
 
 
 def test_return_own_vector_for_most_similar_vectors():

@@ -43,9 +43,13 @@ class TrainedModel:
         return dict(sims)
 
     def predict_grounding_text_for(self, preprocessed_question: [str]) -> str:
-        most_likely = self.get_n_most_similar_vectors(preprocessed_question, 1)
-        # TODO make number of texts that are combined configurable
-        return self.grounding_doc.original_text_for_sp_id(list(most_likely.keys())[0])
+        most_likely = self.get_n_most_similar_vectors(preprocessed_question,
+                                                      self.hyperparams.number_of_most_likely_docs)
+        grounding_text = ''
+        for span_id in sorted(list(most_likely.keys())):
+            grounding_text = grounding_text + self.grounding_doc.original_text_for_sp_id(span_id) + ' '
+
+        return grounding_text.strip()
 
 
 class BatchTrainer:
