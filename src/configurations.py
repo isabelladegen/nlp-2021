@@ -23,12 +23,12 @@ class Configuration:
     sweep_rc_split: str = 'train[:10%]'
 
     # Doc2Vec model parameters
-    vector_size: int = 10
+    vector_size: int = 30
     window: int = 4
     min_count: int = 1
     workers: int = 4
     dm: int = 1
-    epochs: int = 30
+    epochs: int = 100
 
     def as_dict(self):
         return asdict(self)

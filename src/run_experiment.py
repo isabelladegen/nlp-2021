@@ -9,7 +9,7 @@ from src.configurations import Configuration
 wandb.init(
     project="test",
     notes="figure out what to log and configure",
-    tags=["simple", "more logs and configs"],
+    tags=["simple", "check that new config works", "use better params"],
     config=Configuration().as_dict()
 )
 
