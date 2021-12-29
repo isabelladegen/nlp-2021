@@ -8,8 +8,8 @@ from src.configurations import Configuration
 
 wandb.init(
     project="test",
-    notes="figure out what to log and configure",
-    tags=["simple", "check that new config works", "use better params", "fixed random score"],
+    notes="still testing",
+    tags=["don't use dialogue history"],
     config=Configuration().as_dict()
 )
 

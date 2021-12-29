@@ -27,10 +27,10 @@ class Configuration:
     predict_answers_rc_split: str = 'train'
     validate_answers_rc_split: str = 'validation'
     random_answers_rc_split: str = 'train'
-    sweep_rc_split: str = 'train[:10%]'
+    sweep_rc_split: str = 'train[:20%]'
 
     # preprocess user questions
-    pre_process_rc_question: int = QuestionPreProcessing.default.value
+    pre_process_rc_question: int = QuestionPreProcessing.user_question_only.value
 
     # Doc2Vec model parameters
     vector_size: int = 80
