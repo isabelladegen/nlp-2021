@@ -27,8 +27,8 @@ class Configuration:
     window: int = 4
     min_count: int = 1
     workers: int = 4
-    dm: int = 1
-    epochs: int = 100
+    dm: int = 0
+    epochs: int = 50
 
     def as_dict(self):
         return asdict(self)
