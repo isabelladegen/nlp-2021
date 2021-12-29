@@ -16,6 +16,9 @@ if __name__ == '__main__':
         },
         'dm': {
             'values': [0, 1]
+        },
+        'number_of_most_likely_docs': {
+            'values': [1, 2, 3]
         }
     }
 
