@@ -3,20 +3,22 @@ from datasets import Dataset
 import random
 from gensim.models import KeyedVectors
 from gensim.models.doc2vec import Doc2Vec
+
 from src.preprocessing_documents import GroundingDocument
 from src.preprocessing_rc import *
 from src.evaluate import PredictionsEvaluation
-from src.parameters import *
+from src.configurations import Configuration
 
 
 class TrainedModel:
+    hyperparams: Configuration
     id: str  # doc id
     grounding_doc: GroundingDocument
     trained_model: Doc2Vec
 
-    def __init__(self, grounding_doc: GroundingDocument, hyperparams=None):
+    def __init__(self, grounding_doc: GroundingDocument, hyperparams: Configuration = None):
         if not hyperparams:
-            hyperparams = config_params
+            hyperparams = Configuration()
         self.hyperparams = hyperparams
         self.grounding_doc = grounding_doc
         self.id = grounding_doc.id
@@ -25,12 +27,12 @@ class TrainedModel:
     def __train_model(self):
         documents = self.grounding_doc.tagged_documents
         return Doc2Vec(documents,
-                       vector_size=self.hyperparams['vector_size'],
-                       window=self.hyperparams['window'],
-                       min_count=self.hyperparams['min_count'],
-                       workers=self.hyperparams['workers'],
-                       dm=self.hyperparams['dm'],
-                       epochs=self.hyperparams['epochs'])
+                       vector_size=self.hyperparams.vector_size,
+                       window=self.hyperparams.window,
+                       min_count=self.hyperparams.min_count,
+                       workers=self.hyperparams.workers,
+                       dm=self.hyperparams.dm,
+                       epochs=self.hyperparams.epochs)
 
     def document_vectors(self) -> KeyedVectors:
         return self.trained_model.dv
@@ -50,10 +52,9 @@ class BatchTrainer:
     trainedModels: dict[str, TrainedModel]
     grounding_docs: [GroundingDocument]
 
-    def __init__(self, grounding_docs: [GroundingDocument], hyperparams=None):
-        if not hyperparams:
-            hyperparams = config_params
-        self.hyperparams = hyperparams
+    def __init__(self, grounding_docs: [GroundingDocument], hyperparams: dict = {}):
+        config = Configuration(**hyperparams)
+        self.hyperparams = config
         self.grounding_docs = grounding_docs
         self.trainedModels = self.__trained_models()
 

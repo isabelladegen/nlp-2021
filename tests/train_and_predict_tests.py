@@ -86,7 +86,7 @@ def test_return_own_vector_for_most_similar_vectors():
     print(f'First: {most_similar_to_span_1}')
     print(f'Second: {most_similar_to_span_2}')
     print(f'Third: {most_similar_to_span_3}')
-    # TODO think abou to be able to do this with small documents if at all
+    # TODO think about to be able to do this with small documents if at all
     # assert_that(most_similar_to_span_1[span_id1], greater_than(0.0))
     # assert_that(most_similar_to_span_2[span_id2], greater_than(0.0))
     # assert_that(most_similar_to_span_3[span_id2], greater_than(0.0))

@@ -18,11 +18,5 @@ if __name__ == '__main__':
         }
     }
 
-    # vector_size=10,
-    # window=4,
-    # min_count=1,
-    # workers=4,
-    # dm=1,
-    # epochs=30
     sweep_id = wandb.sweep(sweep_config, project="test")
     wandb.agent(sweep_id, function=train)

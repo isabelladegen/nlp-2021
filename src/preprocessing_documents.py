@@ -1,36 +1,30 @@
 """
 This script is used to convert the raw data for training and evaluation
-
-TODO:
-- use config file for variables
-- log configurations such as preprocessing method
-
 """
 
 from gensim.models.doc2vec import TaggedDocument
 from datasets import load_dataset
 from gensim.utils import simple_preprocess
 import pandas as pd
-from src.parameters import *
+from src.configurations import Configuration
 
 
-def load_documents_df(config: dict = None):
+def load_documents_df(config: dict = {}):
     """
     Load document dataset from huggingface into df
 
     Returns:
         [numpy dataframe]: slimmed down numpy dataframe
    """
-    if not config:
-        config = config_params
+    params = Configuration(**config)
 
     document_dataset = load_dataset(
-        config['dataset_name'],
-        name=config['document_data_name'],
-        split="train",  # there is no other split
-        ignore_verifications=config['data_ignore_verifications'],
-        keep_in_memory=config['keep_in_memory'],
-        cache_dir=config['data_cache_dir']
+        params.dataset_name,
+        name=params.document_data_name,
+        split=params.document_data_split,
+        ignore_verifications=params.data_ignore_verifications,
+        keep_in_memory=params.keep_in_memory,
+        cache_dir=params.data_cache_dir
     )
     document = pd.DataFrame(data=document_dataset)
     # drop columns we don't need
@@ -41,7 +35,7 @@ def load_documents_df(config: dict = None):
 # TODO do something a bit more clever, e.g don't remove numbers
 def preprocess_doc(doc: str):
     """
-    Preprocessing of the string #TODO use config params
+    Preprocessing of the string
 
     Args:
        doc str: document as string, e.g span
@@ -52,10 +46,15 @@ def preprocess_doc(doc: str):
     return simple_preprocess(doc, deacc=True)
 
 
-def grounding_documents_for_dataframe(df: pd.DataFrame):
+def grounding_documents_for_dataframe(df: pd.DataFrame, limit_doc_ids_to: set[str] = None):
     result = []
-    for index, row in df.iterrows():
-        result.append(GroundingDocument(row))
+    if not limit_doc_ids_to:  # no doc id limitation
+        for index, row in df.iterrows():
+            result.append(GroundingDocument(row))
+    else:  # only great grounding doc for those that contain a provide doc id
+        limited_df = df.loc[df['doc_id'].isin(limit_doc_ids_to)]
+        for index, row in limited_df.iterrows():
+            result.append(GroundingDocument(row))
     return result
 
 
@@ -117,7 +116,6 @@ class GroundingDocument:
 
     def tagged_document_for(self, span_id: str) -> TaggedDocument:
         return next((doc for doc in self.tagged_documents if doc.tags[0] == span_id), None)
-        # TODO  think about keying tagged documents in a dictionary keyed in span id too
 
     def original_text_for_sp_id(self, span_id):
         return self.raw_docs[span_id]

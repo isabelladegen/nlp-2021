@@ -1,6 +1,7 @@
 from hamcrest import *
 from src.preprocessing_documents import *
-from tests.utils.test_utils import *
+from utils.test_utils import *
+from src.preprocessing_rc import *
 
 
 def test_load_documents_df():
@@ -182,3 +183,15 @@ def test_get_grounding_documents_for_huggingface_document_dataset():
     example_grounding_doc = grounding_documents[100]
     assert_that(example_grounding_doc.id, equal_to(example_row['doc_id']))
     assert_that(len(example_grounding_doc.raw_docs), equal_to(len(example_row['spans'])))
+
+
+def test_only_creates_a_dataframe_if_the_doc_id_is_in_the_list_of_doc_ids():
+    rc_dataset = load_rc_dataset('train[10:20]')  # only load 10 rows
+    df = load_documents_df()  # load of documents
+
+    unique_doc_ids = set(rc_dataset[RC_DOC_ID])
+    grounding_documents = grounding_documents_for_dataframe(df, unique_doc_ids)
+
+    assert_that(len(grounding_documents), equal_to(len(unique_doc_ids)))
+    for doc in grounding_documents:
+        assert_that(unique_doc_ids, has_item(doc.id))
