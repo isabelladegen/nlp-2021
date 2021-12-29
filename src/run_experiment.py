@@ -9,7 +9,7 @@ from src.configurations import Configuration
 wandb.init(
     project="test",
     notes="still testing",
-    tags=["don't use dialogue history"],
+    tags=["don't use dialogue history", "return the two most likely spans"],
     config=Configuration().as_dict()
 )
 
