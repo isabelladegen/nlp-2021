@@ -80,7 +80,7 @@ class BatchTrainer:
             gold_answer = row[RC_ANSWERS]
 
             # process question
-            preprocessed_question = preprocess_question(question_)
+            preprocessed_question = preprocess_question(question_, self.hyperparams)
             # get trained model
             model = self.model_for_doc_id(doc_id)
             # get prediction
