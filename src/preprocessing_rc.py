@@ -21,8 +21,7 @@ def load_rc_dataset(split: str, config: dict = {}):
     return rc_dataset
 
 
-def preprocess_question(question: str, config: dict = {}) -> [str]:
-    params = Configuration(**config)
+def preprocess_question(question: str, params: Configuration) -> [str]:
     preprocess_type = params.pre_process_rc_question
     pre_processed_question = question
     if preprocess_type == QuestionPreProcessing.user_question_only.value:
