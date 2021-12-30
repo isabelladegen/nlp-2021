@@ -25,7 +25,7 @@ train_predictions = trainer.predict_answers_for(load_rc_dataset(config.predict_a
 train_score = train_predictions.squad2_score()
 
 validation_predictions = trainer.predict_answers_for(
-    load_rc_dataset(config.predict_answers_rc_split, wandb.config))
+    load_rc_dataset(config.validate_answers_rc_split, wandb.config))
 validation_score = validation_predictions.squad2_score()
 
 random_validation_predictions = trainer.predict_random_spans_for(
@@ -54,4 +54,4 @@ run.log({"validation_per_prediction_scores": validation_table})
 
 random_scores_per_predictions = random_validation_predictions.per_prediction_score()
 random_table = wandb.Table(dataframe=random_scores_per_predictions)
-run.log({"validation_per_prediction_scores": random_table})
+run.log({"random_per_prediction_scores": random_table})
