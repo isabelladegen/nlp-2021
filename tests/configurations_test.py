@@ -6,7 +6,7 @@ from dataclasses import fields
 def test_default_values_for_all_configurations():
     configs = Configuration()
 
-    assert_that(len(fields(configs)), equal_to(18))  # also will hint to update tests
+    assert_that(len(fields(configs)), equal_to(19))  # also will hint to update tests
     assert_that(configs.dataset_name, equal_to('doc2dial'))
     assert_that(configs.document_data_name, equal_to('document_domain'))
     assert_that(configs.rc_data, equal_to('doc2dial_rc'))

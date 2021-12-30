@@ -33,12 +33,12 @@ class Configuration:
     pre_process_rc_question: int = QuestionPreProcessing.user_question_only.value
 
     # Doc2Vec model parameters
-    vector_size: int = 80
+    vector_size: int = 100
     window: int = 4
     min_count: int = 1
     workers: int = 4
     dm: int = 0
-    epochs: int = 100
+    epochs: int = 150
 
     # predictions parameters
     number_of_most_likely_docs: int = 2

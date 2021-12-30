@@ -150,10 +150,10 @@ def test_returns_predictions_and_references():
     grounding_document = GroundingDocumentBuilder().with_spans([span1, span2, span3]).build()
 
     rc_dataset = RCDatasetBuilder() \
-        .with_question_answer("rcId1", grounding_document.id, "Paris question", text1) \
-        .with_question_answer("rcId2", grounding_document.id, "Power question", text2) \
-        .with_question_answer("rcId3", grounding_document.id, "Different question", text3) \
-        .with_question_answer("rcId4", grounding_document.id, "Another question", text3) \
+        .with_question_answer("rcId1", grounding_document.id, "user:Paris question", text1) \
+        .with_question_answer("rcId2", grounding_document.id, "user:Power question", text2) \
+        .with_question_answer("rcId3", grounding_document.id, "user:Different question", text3) \
+        .with_question_answer("rcId4", grounding_document.id, "user:Another question", text3) \
         .build()
 
     # train
