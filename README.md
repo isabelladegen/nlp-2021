@@ -15,7 +15,7 @@ TODO
 Assuming you're using conda you can run the following commands:
 
 1. Create Conda env
-
+   
     `conda env create -f conda.yml`
     `conda activate nlp-2021`
 
