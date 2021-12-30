@@ -54,7 +54,7 @@ def test_predicts_grounding_text_for_given_question():
     model = TrainedModel(document)
 
     # predict most likely grounding text
-    most_likely_grounding_text = model.predict_grounding_text_for(processed_question)
+    most_likely_grounding_text, likelihood = model.predict_grounding_text_for(processed_question)
 
     assert_that(most_likely_grounding_text, equal_to(text))
 
@@ -79,9 +79,10 @@ def test_predicts_n_grounding_texts_for_a_given_question_sorted_by_span_id():
     model = TrainedModel(document, config)
 
     # predict most likely grounding text
-    most_likely_grounding_text = model.predict_grounding_text_for(processed_question)
+    most_likely_grounding_text, likelihoods = model.predict_grounding_text_for(processed_question)
 
-    assert_that(most_likely_grounding_text, equal_to(span_text2 + ' '+ span_text1))
+    assert_that(most_likely_grounding_text, equal_to(span_text2 + ' ' + span_text1))
+    assert_that(len(likelihoods), equal_to(config.number_of_most_likely_docs))
 
 
 def test_return_own_vector_for_most_similar_vectors():

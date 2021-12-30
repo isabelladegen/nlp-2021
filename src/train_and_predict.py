@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, List
 from datasets import Dataset
 import random
 from gensim.models import KeyedVectors
@@ -42,14 +42,16 @@ class TrainedModel:
         sims = self.trained_model.dv.most_similar([vector_for_new_doc], topn=n)
         return dict(sims)
 
-    def predict_grounding_text_for(self, preprocessed_question: [str]) -> str:
+    def predict_grounding_text_for(self, preprocessed_question: [str]):
         most_likely = self.get_n_most_similar_vectors(preprocessed_question,
                                                       self.hyperparams.number_of_most_likely_docs)
         grounding_text = ''
+        likelihoods: list[float] = []
         for span_id in sorted(list(most_likely.keys())):
             grounding_text = grounding_text + self.grounding_doc.original_text_for_sp_id(span_id) + ' '
+            likelihoods.append(most_likely[span_id])
 
-        return grounding_text.strip()
+        return grounding_text.strip(), likelihoods
 
 
 class BatchTrainer:
@@ -84,10 +86,10 @@ class BatchTrainer:
             # get trained model
             model = self.model_for_doc_id(doc_id)
             # get prediction
-            most_likely_answer = model.predict_grounding_text_for(preprocessed_question)
+            most_likely_answer, likelihood = model.predict_grounding_text_for(preprocessed_question)
 
             # for evaluation combine predicted answer and gold answer
-            predictions_evaluation.add(prediction_id, most_likely_answer, gold_answer)
+            predictions_evaluation.add(prediction_id, most_likely_answer, gold_answer, likelihood)
 
         return predictions_evaluation
 

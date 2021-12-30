@@ -8,8 +8,8 @@ from src.configurations import Configuration
 
 wandb.init(
     project="test",
-    notes="still testing",
-    tags=["don't use dialogue history", "return the two most likely spans"],
+    notes="Checking of it's useful to log a per question score too",
+    tags=["another test run"],
     config=Configuration().as_dict()
 )
 
@@ -23,18 +23,18 @@ grounding_documents = grounding_documents_for_dataframe(df)
 trainer = BatchTrainer(grounding_documents, wandb.config)
 
 # get the current wand configuration in case there's a sweep running
-wand_config = Configuration(**wandb.config)
+config = Configuration(**wandb.config)
 
-train_predictions = trainer.predict_answers_for(load_rc_dataset(wand_config.predict_answers_rc_split, wandb.config))
-train_score = train_predictions.squad2_score()
+train_predictions = trainer.predict_answers_for(load_rc_dataset(config.predict_answers_rc_split, wandb.config))
+train_score = train_predictions.squad2_score(wandb)
 
 validation_predictions = trainer.predict_answers_for(
-    load_rc_dataset(wand_config.predict_answers_rc_split, wandb.config))
-validation_score = validation_predictions.squad2_score()
+    load_rc_dataset(config.predict_answers_rc_split, wandb.config))
+validation_score = validation_predictions.squad2_score(wandb)
 
 random_validation_predictions = trainer.predict_random_spans_for(
-    load_rc_dataset(wand_config.random_answers_rc_split, wandb.config))
-random_validation_score = random_validation_predictions.squad2_score()
+    load_rc_dataset(config.random_answers_rc_split, wandb.config))
+random_validation_score = random_validation_predictions.squad2_score(wandb)
 
 wandb.log({
     SCORE_EXACT: train_score[SCORE_EXACT],
