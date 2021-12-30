@@ -21,17 +21,17 @@ trainer = BatchTrainer(grounding_documents, wandb.config)
 # get the current wand configuration in case there's a sweep running
 config = Configuration(**wandb.config)
 
+# predict answers
 train_predictions = trainer.predict_answers_for(load_rc_dataset(config.predict_answers_rc_split, wandb.config))
+validation_predictions = trainer.predict_answers_for(load_rc_dataset(config.validate_answers_rc_split, wandb.config))
+random_predictions = trainer.predict_random_spans_for(load_rc_dataset(config.random_answers_rc_split, wandb.config))
+
+# evaluate predictions
 train_score = train_predictions.squad2_score()
-
-validation_predictions = trainer.predict_answers_for(
-    load_rc_dataset(config.validate_answers_rc_split, wandb.config))
 validation_score = validation_predictions.squad2_score()
+random_validation_score = random_predictions.squad2_score()
 
-random_validation_predictions = trainer.predict_random_spans_for(
-    load_rc_dataset(config.random_answers_rc_split, wandb.config))
-random_validation_score = random_validation_predictions.squad2_score()
-
+# log evaluations
 wandb.log({
     SCORE_EXACT: train_score[SCORE_EXACT],
     SCORE_F1: train_score[SCORE_F1],
@@ -44,6 +44,8 @@ wandb.log({
     'random_' + SCORE_NUMBER_OF_QUESTIONS: random_validation_score[SCORE_NUMBER_OF_QUESTIONS]
 })
 
+print('Getting to tables')
+# evaluate per question and log
 train_scores_per_predictions = train_predictions.per_prediction_score()
 train_table = wandb.Table(dataframe=train_scores_per_predictions)
 run.log({"train_per_prediction_scores": train_table})
@@ -52,6 +54,6 @@ valid_scores_per_predictions = validation_predictions.per_prediction_score()
 validation_table = wandb.Table(dataframe=valid_scores_per_predictions)
 run.log({"validation_per_prediction_scores": validation_table})
 
-random_scores_per_predictions = random_validation_predictions.per_prediction_score()
+random_scores_per_predictions = random_predictions.per_prediction_score()
 random_table = wandb.Table(dataframe=random_scores_per_predictions)
 run.log({"random_per_prediction_scores": random_table})

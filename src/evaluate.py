@@ -40,8 +40,8 @@ class PredictionsEvaluation:
 
     def per_prediction_score(self) -> DataFrame:
         df = pd.DataFrame(columns=('id', 'f1', 'exact', 'likelihoods'))
+        metric = load_metric("squad_v2")
         for index, prediction in enumerate(self.predictions):
-            metric = load_metric("squad_v2")
             pred_id = prediction['id']
             metric.add(prediction=prediction, reference=self.__reference_for_id(pred_id))
             score = metric.compute()
