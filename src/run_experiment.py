@@ -44,16 +44,19 @@ wandb.log({
     'random_' + SCORE_NUMBER_OF_QUESTIONS: random_validation_score[SCORE_NUMBER_OF_QUESTIONS]
 })
 
-print('Getting to tables')
-# evaluate per question and log
-train_scores_per_predictions = train_predictions.per_prediction_score()
-train_table = wandb.Table(dataframe=train_scores_per_predictions)
-run.log({"train_per_prediction_scores": train_table})
-
-valid_scores_per_predictions = validation_predictions.per_prediction_score()
-validation_table = wandb.Table(dataframe=valid_scores_per_predictions)
-run.log({"validation_per_prediction_scores": validation_table})
-
-random_scores_per_predictions = random_predictions.per_prediction_score()
-random_table = wandb.Table(dataframe=random_scores_per_predictions)
-run.log({"random_per_prediction_scores": random_table})
+# Uncomment if you want per prediction measures
+# print('Per predictions train table')
+# # evaluate per question and log
+# train_scores_per_predictions = train_predictions.per_prediction_score()
+# train_table = wandb.Table(dataframe=train_scores_per_predictions)
+# run.log({"train_per_prediction_scores": train_table})
+#
+# print('Per predictions Validation table')
+# valid_scores_per_predictions = validation_predictions.per_prediction_score()
+# validation_table = wandb.Table(dataframe=valid_scores_per_predictions)
+# run.log({"validation_per_prediction_scores": validation_table})
+#
+# print('Per predictions Random table')
+# random_scores_per_predictions = random_predictions.per_prediction_score()
+# random_table = wandb.Table(dataframe=random_scores_per_predictions)
+# run.log({"random_per_prediction_scores": random_table})

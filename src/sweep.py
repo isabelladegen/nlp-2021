@@ -9,16 +9,16 @@ if __name__ == '__main__':
             'values': [QuestionPreProcessing.default.value, QuestionPreProcessing.user_question_only.value]
         },
         'vector_size': {
-            'values': [30, 70, 80, 100]
+            'values': [100, 150]
         },
         'epochs': {
-            'values': [50, 100, 150]
+            'values': [150, 200, 250]
         },
         'dm': {
-            'values': [0, 1]
+            'values': [0]
         },
         'number_of_most_likely_docs': {
-            'values': [1, 2, 3]
+            'values': [1, 3]
         }
     }
 

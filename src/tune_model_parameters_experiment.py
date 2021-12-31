@@ -8,7 +8,7 @@ def train():
 
     wandb.init(
         project="test",
-        notes="increase vector size",
+        notes="increase epochs and vector size",
         tags=["don't train on all docs", "simple", "bigger vector", "more epochs"],
         config=Configuration().as_dict()
     )
