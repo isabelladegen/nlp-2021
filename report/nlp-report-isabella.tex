@@ -25,12 +25,12 @@
 \usepackage{url}
 \usepackage{latexsym}
 \usepackage{microtype}
-\usepackage{hyperref}
 \usepackage{listings}
 \hyphenation{an-aly-sis}
 \hyphenation{an-aly-ses}
 \hyphenation{Sem-Eval}
 \usepackage[dvipsnames]{xcolor}
+\usepackage{hyperref}
 \hypersetup{
     colorlinks=true,
     linkcolor=Emerald,
@@ -48,9 +48,10 @@
 \begin{document}
 
     \maketitle
+
     \begin{abstract}
         How does an embeddings based approach for finding the grounding documents to a user question compare to ....
-
+        \href{https://en.m.wikipedia.org/wiki/Spirit_way}{Wikipedia page: Spirit Way}
 
     \end{abstract}
 
@@ -84,6 +85,9 @@
     The following sections go into more details about each step.
 
 %    TODO - how to be able to reproduce an experiment?
+    Conda environment for this coursework build from the conda.yml file. Only version fixed is Python 3.9 as I want
+    to use the latest versions for all other libraries. Wandb \cite{wandb} automatically produces an \texttt{requirements.txt}
+    file for each run that lists the exact version of each library at the time of the run to help with reproducibility.
 
 
     \section{Technical Background}\label{sec:technical-background}
@@ -97,34 +101,43 @@
     \section{Method}\label{sec:method}
 
     \subsection{Understanding the Data}\label{subsec:understanding-the-data-method}
+    Before starting to develop an algorithm I wanted to get an understanding of the dat available.
+    There are three datasets for the Doc2dial competition available on \href{https://huggingface.co/datasets/doc2dial}{Hugging Face}:
+    \begin{itemize}
+        \item dialogue\_domain with data split train and validation
+        \item document\_domain with data split train
+        \item doc2dial\_rc with data split train and validation
+    \end{itemize}\\
 
-    What does the data look like?
+    I wanted to answer the following questions:
+    \begin{itemize}
+        \item How many grounding documents where there?
+        \item How were they used in the dialogue?, How do I know which document was referenced in the dialogue?
+        \item What was the format and type of the data?, What data type was the data?,
+        Was the document already split into spans and how?
+        \item How much data do I have?. How many spans does a document have?, How often is each span used in the dialogue?,
+        Was each document used?
+        \item How do I best interact and query the dataset?,Do I continue to use panda's dataframe or do I directly query
+        the arrow dataset?
+    \end{itemize}
 
-    Questions:
-    1. How many domains and how frequent are those?
-    2. How many user utterances don't have a span id, have a "precondition"/"solution"?
-    3. How often is each span from the documents data used in the dialogue data?
 
-    \subsection*{Understanding the Data}\label{subsec:understanding-the-data2}
-
-
+%%    \subsection*{Understanding the Data}\label{subsec:understanding-the-data2}
+%
+%
     \section{Experiment Setup}\label{sec:experiment-setup}
 
-    Conda environment for this coursework build from the conda.yml file. Only version fixed is Python 3.9 as I want
-    to use the latest versions for all other libraries. Wandb \cite{wandb} automatically produces an \texttt{requirements.txt}
-    file for each run that lists the exact version of each library at the time of the run to help with reproducibility.
+    All experiments were run within the nlp-2021 conda environment that was build and updated using the
+    \href{https://github.com/isabelladegen/nlp-2021/blob/main/conda.yml}{conda.yml} file. The
+    \href{https://github.com/isabelladegen/nlp-2021}{Readme} on Github describes how to setup the environment as well
+    as how to run a wandb experiment
 
     \subsection{Understanding the Data}\label{subsec:understanding-the-data-experiment}
-
-    For analysing and investigating the Doc2Dial dataset I wrote the Jupyter Notebook
-    \href{https://github.com/isabelladegen/nlp-2021/blob/main/notebooks/DataInvestigationDoc2Dial.ipynb}{DataInvestigationDoc2Dial.ipynb}.
-    The data was downloaded from \href{Hugging Face}{https://huggingface.co/datasets/doc2dial} using \texttt{load_datasets}
-    and imported into a Pandas Dataframe \cite{reback2020pandas} for ease of analysis. There are three main datasets:
-    \begin{itemize}
-        \item dialogue_domain
-        \item document_domain
-        \item doc2dial_rc \href{RCDataInvestigation.ipynb}{https://github.com/isabelladegen/nlp-2021/blob/main/notebooks/RCDataInvestigation.ipynb}
-    \end{itemize}
+    I analysed the three datasets dialogue\_domain, document\_domain and doc2dial\_rc using the Jupyter Notebooks
+    \href{https://github.com/isabelladegen/nlp-2021/blob/main/notebooks/DataInvestigationDoc2Dial.ipynb}{DataInvestigationDoc2Dial.ipynb}
+    and \href{https://github.com/isabelladegen/nlp-2021/blob/main/notebooks/RCDataInvestigation.ipynb}{RCDataInvestigation.ipynb}.
+    The notebooks download the downloaded from \href{https://huggingface.co/datasets/doc2dial}{Hugging Face}
+    using \texttt{load\_datasets} and import into pandas dataframes \cite{reback2020pandas} for ease of analysis.
 
 
     \section{Results}\label{sec:results}
