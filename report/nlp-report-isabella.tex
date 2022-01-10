@@ -151,12 +151,18 @@
 
     \subsection{Parameter Experimentation}\label{subsec:experimentation-method}
     I started off implementing Doc2Vec in Jupyter notebooks and got the first initial findings. However, there are loads
-    of possible configurations: using spans or sections as documents, different methods of preprocessing the spans, different
+    of possible configurations such as: using spans or sections as documents, different methods of preprocessing the spans, different
     hyperparameter configurations for Doc2Vec and different possibilities of creating the answers from just the most similar
-    document to combining a few most similar documents. It's no wonder that I soon got lost in the Jupyter notebooks and
-    decided that it was time to keep track of the different experiment by moving my code into Python scripts, adding
-    unit tests for the most important methods and keeping track of the configurations and results of the various runs using
-    wandb \cite{wandb}.
+    document to combining a few most similar documents. It's no wonder that I soon got lost in the Jupyter notebooks, struggled
+    to remember what I've ran with which parameters and
+    decided that it was time to keep track of the different experiment by moving my code into Python scripts. I also took
+    the opertunity to add unit tests for the most important methods and not surprisingly found mistakes.
+    Finally, I added wandb as experiment tracking platform to automatically log all configurations and results for each of
+    the various runs \cite{wandb}.
+
+    My goals was to gain a better high level understanding of what parameters affected the results for Doc2Vec and not to
+    find the best Doc2Vec solution. I also wanted to learn wandb as a way to keep track of experiments and making it easier
+    to reproduce experiments.
 
 
     \section{Experiment Setup}\label{sec:experiment-setup}
@@ -208,6 +214,31 @@
 
     The \href{https://github.com/isabelladegen/nlp-2021/blob/main/notebooks/Doc2VecSolutionForSectionsForSubtask1.ipynb}{Doc2VecSolutionForSectionsForSubtask1.ipynb}
     Jupyter notebook has a solution where sections are used instead of spans.
+
+    \subsection{Parameter Experimentation}\label{subsec:experimentation-experiment}
+    The python code for running the different experiments can be found in the \href{https://github.com/isabelladegen/nlp-2021/tree/main/src}{src}
+    folder. There are a few different Python scripts and classes:
+    \begin{outline}
+        \1 \textbf{Preprocessing}: The \texttt{preprocessing\_documents.py} script loads the document domain data and creates the
+        \texttt{GroundingDocument} class used by the model. The \texttt{preprocessing\_rc.py} script loads the doc2dial rc
+        domain data and preprocesses the questions.
+        \1 \textbf{Training \& Prediction}: The \texttt{train\_and\_predict.py} has a \texttt{TrainedModel} class that is a wrapper around
+        Doc2Vec and a \texttt{BatchTrainer} that manages the models for each document.
+        \1 \textbf{Evaluation}: The \texttt{evaluate.py} file is dealing with creating and running the \texttt{squad\_v2} metrics for the predictions
+        \1 \textbf{Configuration}: The \texttt{Configuration.py} dataclass is used to store all the default configurations including
+        the model's hyperparameters. It is also used as the \texttt{wand.config}.
+        \1 \textbf{Run an experiment}: The \texttt{run\_experiment.py} script is used to run an experiment.
+        The configurations used are in \texttt{configuration.py}.
+        The experiment can be named and tagged here or later on the wandb website.
+        \1 \textbf{Run a sweep}: The \texttt{sweep.py} script is used to run a wand sweep where multiple parameters are tested.
+        There's a configuration at the top of the file that is used for the different hyper parameters to be sweeped.
+        Any parameter not set there will be taken from the default configuration.
+        \1 \textbf{Unit tests}: the unit tests can be found in the \href{https://github.com/isabelladegen/nlp-2021/tree/main/tests}{tests}
+        folder. They have data builders to quickly create fake data and make sure everything works properly.
+    \end{outline}
+
+    Wandb automatically takes a snapshot of the Python environment, creates a requirements.txt file and uploads all this
+    data to wandb. It forces to be given a configuration which also gets logged and uploaded.
 
 
     \section{Results}\label{sec:results}
@@ -301,10 +332,10 @@
     \begin{table}[h!]
         \centering
         \begin{tabular}{|l|l|l|l|}
-        \hline
-        Metrics     & Doc2Vec Spans    & Doc2Vec Sections & Random Guessing Spans \\ \hline
-        F1 Score    & 15.26             & 17.26            & 11.73                \\ \hline
-        Exact Match & 1.43              & 0.85             & 1.14                 \\ \hline
+            \hline
+            Metrics     & Doc2Vec Spans & Doc2Vec Sections & Random Guessing Spans \\ \hline
+            F1 Score    & 15.26         & 17.26            & 11.73                 \\ \hline
+            Exact Match & 1.43          & 0.85             & 1.14                  \\ \hline
         \end{tabular}
         \caption{Doc2Vec for spans and sections compared to random guessing for spans}
         \label{table:simple-doc2vec-results}
