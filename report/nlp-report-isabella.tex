@@ -25,74 +25,134 @@
 \usepackage{url}
 \usepackage{latexsym}
 \usepackage{microtype}
-
+\usepackage{hyperref}
+\usepackage{listings}
 \hyphenation{an-aly-sis}
 \hyphenation{an-aly-ses}
 \hyphenation{Sem-Eval}
-
-%\setlength\titlebox{5cm}
+\usepackage[dvipsnames]{xcolor}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=Emerald,
+    filecolor=magenta,
+    urlcolor=blue,
+    citecolor=RoyalBlue
+}
+\setlength\titlebox{5cm}
 \colingfinalcopy % Uncomment this line for all SemEval submissions
 
-% You can expand the titlebox if you need extra space
-% to show all the authors. Please do not make the titlebox
-% smaller than 5cm (the original size); we will check this
-% in the camera-ready version and ask you to change it back.
-
-
-\title{[SystemName] at SemEval-2020 Task [TaskNumber]: [Insert Paper Title Here]}
-
-\author{First Author \\
-  Affiliation / Address line 1 \\
-  Affiliation / Address line 2 \\
-  Affiliation / Address line 3 \\
-  {\tt email@domain} \\\And
-  Second Author \\
-  Affiliation / Address line 1 \\
-  Affiliation / Address line 2 \\
-  Affiliation / Address line 3 \\
-  {\tt email@domain} \\}
-
+\title{SemEval-2020 Task 1: Dialogue and Narrative Coursework Report}
+\author{Isabella Degen \\ University of Bristol \\ {\tt isabella.degen@bristol.ac.uk}}
 \date{}
 
 \begin{document}
 
-\maketitle
-\begin{abstract}
-  write some abstract
-\end{abstract}
-
-\section{Introduction}
-Motivation and Approach
+    \maketitle
+    \begin{abstract}
+        How does an embeddings based approach for finding the grounding documents to a user question compare to ....
 
 
-\section{Technical Background}
-\label{technical_background}
+    \end{abstract}
 
-Be brief.
-
-Include https://arxiv.org/abs/1405.4053v2
-
-\section{Method}
-
-Description of method
-
-\section{Experiment Setup}
-Setup of the experiment
-
-\section{Results}
-Results achieved
-
-\section{Conclusions}
-share any insights you gained about how the system works.
+    focus on developing your understanding of designing,  building,  and evaluating an NLP system.
+    We are looking for a scientific approach to designing and evaluating the system and a technically sound implementation,
+    based on what we have learned during the unit.
 
 
-Notes: the rest of the metrics is not in use if the no answer probability is not used (which was not part of the exercise
-see \cite{squad2git}
+    \section{Introduction}\label{sec:introduction}
+    Motivation and Approach:
 
-\section*{Acknowledgements}
+    This report describes the method, experiment setup, results and conclusions for the 2021 Dialogue and Narrative
+    coursework.
+
+    The aim of this coursework was to gain more experience and to apply some of the NLP techniques we've learned during
+    the semester. I focused on designing, implementing and evaluating a simple embeddings based solution for
+    subtask 1 from the DialDoc21
+    competition \cite{feng-etal-2020-doc2dial}.
+    This allowed me to learn how a simple solution compares to the submissions that topped the leaderboard,
+    while developing my python programing skills and
+    learing how to implement, evaluate and keep track of experiments and results for an NLP system.
+
+    I started with building my understanding about the Doc2Dial dataset \cite{feng-etal-2020-doc2dial} using Jupyter notebooks
+    before experimenting with an embeddings algorithm called Doc2Vec from Gensim \cite{rehurek_lrec}.
+    To run multiple experiments and vary with the hyperparameters of the system,
+    I moved the Python code into a Python module, wrote Unit Tests for the important functions, moved the configuration
+    into a Configuration Dataclass and logged each experiment using
+    the Weights \& Biases platform \cite{wandb}. For the rest of this report I'm going to refer to the Weights \& Biases
+    as wandb
+
+    The following sections go into more details about each step.
+
+%    TODO - how to be able to reproduce an experiment?
 
 
-\bibliographystyle{coling}
-\bibliography{bibliography}
+    \section{Technical Background}\label{sec:technical-background}
+
+    - Describe Doc2Vec background
+    - Describe Wand
+
+    Include https://arxiv.org/abs/1405.4053v2
+
+
+    \section{Method}\label{sec:method}
+
+    \subsection{Understanding the Data}\label{subsec:understanding-the-data-method}
+
+    What does the data look like?
+
+    Questions:
+    1. How many domains and how frequent are those?
+    2. How many user utterances don't have a span id, have a "precondition"/"solution"?
+    3. How often is each span from the documents data used in the dialogue data?
+
+    \subsection*{Understanding the Data}\label{subsec:understanding-the-data2}
+
+
+    \section{Experiment Setup}\label{sec:experiment-setup}
+
+    Conda environment for this coursework build from the conda.yml file. Only version fixed is Python 3.9 as I want
+    to use the latest versions for all other libraries. Wandb \cite{wandb} automatically produces an \texttt{requirements.txt}
+    file for each run that lists the exact version of each library at the time of the run to help with reproducibility.
+
+    \subsection{Understanding the Data}\label{subsec:understanding-the-data-experiment}
+
+    For analysing and investigating the Doc2Dial dataset I wrote the Jupyter Notebook
+    \href{https://github.com/isabelladegen/nlp-2021/blob/main/notebooks/DataInvestigationDoc2Dial.ipynb}{DataInvestigationDoc2Dial.ipynb}.
+    The data was downloaded from \href{Hugging Face}{https://huggingface.co/datasets/doc2dial} using \texttt{load_datasets}
+    and imported into a Pandas Dataframe \cite{reback2020pandas} for ease of analysis. There are three main datasets:
+    \begin{itemize}
+        \item dialogue_domain
+        \item document_domain
+        \item doc2dial_rc
+    \end{itemize}
+
+
+    \section{Results}\label{sec:results}
+
+    \subsection{Understanding the Data}\label{subsec:understanding-the-data-results}
+
+    Notes: the rest of the metrics is not in use if the no answer probability is not used (which was not part of the exercise
+    see \cite{squad2git}
+
+
+    \section{Conclusions}\label{sec:conclusions}
+    share any insights you gained about how the system works.
+    - solution is inferior to any solution on the leaderboard but better than random guessing
+    - F1 and exact match are hard to both optimise, better F1 means bad exact match
+    -   problem came from me allowing the algorithm to return multiple spans that could be from all over the document.
+    had I only allowed spans from the same sections with the highest probability F1 and exact match might not have been opposite
+
+    - curious to know how well word2vec would have worked
+
+    \subsection{Learnings}\label{subsec:learnings}
+    - focus on building the end to end pipeline before diving into the data, endless time can be spent analysing the data
+    but having an end to end process going actually helps focusing what areas need more analysis
+    - keeping the data mangling code out of notebooks and in tested python code
+    - Build configuration and experiment tracking in from the start, I lost a lot of time forgetting what I've tried before I
+    moved to tracking all parameters on Weights and Biases
+
+
+    \bibliographystyle{coling}
+    \bibliography{bibliography}
 
 \end{document}
