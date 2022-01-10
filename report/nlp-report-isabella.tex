@@ -123,14 +123,17 @@
     \end{itemize}
 
 
-%%    \subsection*{Understanding the Data}\label{subsec:understanding-the-data2}
-%
-%
+    \subsection*{Random Guessing as Baseline}\label{subsec:random-guessing-method}
+
+    Before diving into an NLP algorithm solution to subtask1, I wanted gain an idea of how well a program that randomly guessed a
+    grounding span scores. This served me as baseline for the rest of the work.
+
+
 
 
     \section{Experiment Setup}\label{sec:experiment-setup}
 
-    All experiments were run within the nlp-2021 conda environment on my mac. The conda environment that is built and updated using the
+    All experiments were run within the nlp-2021 conda environment on my mac. The conda environment is built and updated using the
     \href{https://github.com/isabelladegen/nlp-2021/blob/main/conda.yml}{conda.yml} file. The
     \href{https://github.com/isabelladegen/nlp-2021}{Readme} on Github describes how to setup the environment as well
     as how to run a wandb experiment.
@@ -148,6 +151,12 @@
     I also wrote a procedure to combine the \texttt{doc2dial\_rc} with \texttt{dialogue\_domain} dataset so I could understand
     this data set better. I used \texttt{matplotlib} \cite{matplotlib} and \texttt{seaborn} \cite{seaborn} to visualise
     some of my findings.
+
+    \subsection*{Random Guessing as Baseline}\label{subsec:random-guessing-experiment}
+    For random guessing I loop through each of the questions in the \texttt{doc2dial\_rc} datataset and simply guess a
+    random span id from the number of spans for the grounding document. The code for this can be found at the
+    bottom of the 
+
 
     \section{Results}\label{sec:results}
 
