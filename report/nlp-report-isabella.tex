@@ -51,7 +51,6 @@
 
     \begin{abstract}
         How does an embeddings based approach for finding the grounding documents to a user question compare to ....
-        \href{https://en.m.wikipedia.org/wiki/Spirit_way}{Wikipedia page: Spirit Way}
 
     \end{abstract}
 
@@ -111,6 +110,7 @@
 
     I wanted to answer the following questions:
     \begin{itemize}
+        \item What are the different datasets and how can I use them?
         \item How many grounding documents where there?
         \item How were they used in the dialogue?, How do I know which document was referenced in the dialogue?
         \item What was the format and type of the data?, What data type was the data?,
@@ -125,26 +125,71 @@
 %%    \subsection*{Understanding the Data}\label{subsec:understanding-the-data2}
 %
 %
+
+
     \section{Experiment Setup}\label{sec:experiment-setup}
 
-    All experiments were run within the nlp-2021 conda environment that was build and updated using the
+    All experiments were run within the nlp-2021 conda environment on my mac. The conda environment that is built and updated using the
     \href{https://github.com/isabelladegen/nlp-2021/blob/main/conda.yml}{conda.yml} file. The
     \href{https://github.com/isabelladegen/nlp-2021}{Readme} on Github describes how to setup the environment as well
-    as how to run a wandb experiment
+    as how to run a wandb experiment.
 
     \subsection{Understanding the Data}\label{subsec:understanding-the-data-experiment}
     I analysed the three datasets dialogue\_domain, document\_domain and doc2dial\_rc using the Jupyter Notebooks
     \href{https://github.com/isabelladegen/nlp-2021/blob/main/notebooks/DataInvestigationDoc2Dial.ipynb}{DataInvestigationDoc2Dial.ipynb}
     and \href{https://github.com/isabelladegen/nlp-2021/blob/main/notebooks/RCDataInvestigation.ipynb}{RCDataInvestigation.ipynb}.
     The notebooks download the downloaded from \href{https://huggingface.co/datasets/doc2dial}{Hugging Face}
-    using \texttt{load\_datasets} and import into pandas dataframes \cite{reback2020pandas} for ease of analysis.
+    using \texttt{load\_datasets} and import into pandas dataframes \cite{reback2020pandas} to make use of
+    \texttt{describe()}, \texttt{info()}, \texttt{value\_counts()}, \texttt{json\_normalize()}. To gain more insights
+    about how the grounding documents from \texttt{document\_domain} are used in in the \texttt{dialogue\_domain},
+    I wrote a procedure to combine the two and and count for each document the number of dialogs, number of turns, number of user utterances,
+    number of agent utterances, number of spans, number of references to the most used span, number of spans that are never referenced.
+    I also wrote a procedure to combine the \texttt{doc2dial\_rc} with \texttt{dialogue\_domain} dataset so I could understand
+    this data set better.
 
 
     \section{Results}\label{sec:results}
 
     \subsection{Understanding the Data}\label{subsec:understanding-the-data-results}
 
-    Notes: the rest of the metrics is not in use if the no answer probability is not used (which was not part of the exercise
+    \textbf{What are the different datasets and how can I use them?}
+
+    The \texttt{dialogue\_domain} dataset contains all the different dialogues. The grounding document is referenced
+    by \texttt{doc\_id}, the dialogue history can be found in \texttt{turns} with \texttt{utterance} being the question
+    or answer by either the user or the agent marked with \texttt{role}. In \texttt{turns.references.sp\_id} the list of
+    matching span ids for the grounding document is provided.
+
+    The \texttt{document\_domain} dataset contains all the different grounding documents. Note that this dataset does not have
+    a training and validation data split and all documents used for training and validation are in the train split.
+    The documents share the same \texttt{doc\_id} with the \texttt{dialogue\_domain}. The full text of the document
+    can be found in \texttt{doc\_text}. The documents are already preprocessed into spans \texttt{spans} which themselves
+    use the \texttt{id\_sp} that then refers back to the \texttt{sp\_id} used in the dialogue's turns. The \texttt{text\_sp}
+    contains the span text.
+
+    I initially thought I needed to create a list of user utterances and the dialogue history for which I need to find the
+    grounding document myself using the \texttt{turns} from the \texttt{dialogue\_domain} dataset. When investigating how
+    to get the already provided \href{https://github.com/doc2dial/sharedtask-dialdoc2021/blob/master/scripts/sharedtask_utils.py}{scoring script}
+    to work did I learn that it was easiest to run my alogrithm of the \texttt{doc2dial\_rc} dataset already had this work done for me.
+    This dataset refers to the grounding documents \texttt{doc\_id} by \texttt{title}.
+    The \texttt{id} is the combination of the \texttt{dialogue\_id\_turn\_id}. \texttt{question} is the dialogue history starting
+    with the the user question that the grounding document should be found for and listing the previous dialogue at each step.
+    Utterances for the user are marked with a \texttt{user:}, those of the agent are marked with \texttt{agent:}. Not
+    all user utterances have their own \texttt{doc2dial\_rc} data row. User's comments or confirmations, e.g \textit{Yes.} and
+    \textit{Ok.} are omitted.
+
+
+
+    \item How many grounding documents where there?
+    \item How were they used in the dialogue?, How do I know which document was referenced in the dialogue?
+    \item What was the format and type of the data?, What data type was the data?,
+    Was the document already split into spans and how?
+    \item How much data do I have?. How many spans does a document have?, How often is each span used in the dialogue?,
+    Was each document used?
+    \item How do I best interact and query the dataset?,Do I continue to use panda's dataframe or do I directly query
+    the arrow dataset?
+
+
+    Notes: about F1 scores and so the rest of the metrics is not in use if the no answer probability is not used (which was not part of the exercise
     see \cite{squad2git}
 
 
