@@ -38,15 +38,16 @@
     urlcolor=blue,
     citecolor=RoyalBlue
 }
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
 \setlength\titlebox{5cm}
-\colingfinalcopy % Uncomment this line for all SemEval submissions
+\colingfinalcopy
 
 \title{SemEval-2020 Task 1: Dialogue and Narrative Coursework Report}
 \author{Isabella Degen \\ University of Bristol \\ {\tt isabella.degen@bristol.ac.uk}}
 \date{}
 
 \begin{document}
-
     \maketitle
 
     \begin{abstract}
@@ -106,7 +107,7 @@
         \item dialogue\_domain with data split train and validation
         \item document\_domain with data split train
         \item doc2dial\_rc with data split train and validation
-    \end{itemize}\\
+    \end{itemize}
 
     I wanted to answer the following questions:
     \begin{itemize}
@@ -145,28 +146,75 @@
     I wrote a procedure to combine the two and and count for each document the number of dialogs, number of turns, number of user utterances,
     number of agent utterances, number of spans, number of references to the most used span, number of spans that are never referenced.
     I also wrote a procedure to combine the \texttt{doc2dial\_rc} with \texttt{dialogue\_domain} dataset so I could understand
-    this data set better.
-
+    this data set better. I used \texttt{matplotlib} \cite{matplotlib} and \texttt{seaborn} \cite{seaborn} to visualise
+    some of my findings.
 
     \section{Results}\label{sec:results}
 
     \subsection{Understanding the Data}\label{subsec:understanding-the-data-results}
 
-    \textbf{What are the different datasets and how can I use them?}
-
-    The \texttt{dialogue\_domain} dataset contains all the different dialogues. The grounding document is referenced
+    The \textbf{\texttt{dialogue\_domain}} dataset contains all the different dialogues. The grounding document is referenced
     by \texttt{doc\_id}, the dialogue history can be found in \texttt{turns} with \texttt{utterance} being the question
     or answer by either the user or the agent marked with \texttt{role}. In \texttt{turns.references.sp\_id} the list of
     matching span ids for the grounding document is provided.
 
-    The \texttt{document\_domain} dataset contains all the different grounding documents. Note that this dataset does not have
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=0.8\textwidth]{number_of_dialogues_and_turns}
+        \caption{Histograms for the number of dialogues per document and the number of turns per dialogue}
+        \label{fig:histogram-dialogue-and-turns}
+    \end{figure}
+
+    In total there are 3474 different dialogues in the training dataset. For each document there are around eight dialogues and
+    each dialogue has around a 100 turns, see figure \ref{fig:histogram-dialogue-and-turns} for teh histograms of the numbers of
+    dialogues for each document and the number of turns in each dialogue.
+    The training dialogue dataset only uses 415 of the 488 grounding documents.\\
+
+    The \textbf{\texttt{document\_domain}} dataset contains all the different grounding documents. Note that this dataset does not have
     a training and validation data split and all documents used for training and validation are in the train split.
     The documents share the same \texttt{doc\_id} with the \texttt{dialogue\_domain}. The full text of the document
     can be found in \texttt{doc\_text}. The documents are already preprocessed into spans \texttt{spans} which themselves
     use the \texttt{id\_sp} that then refers back to the \texttt{sp\_id} used in the dialogue's turns. The \texttt{text\_sp}
     contains the span text.
 
-    I initially thought I needed to create a list of user utterances and the dialogue history for which I need to find the
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=0.8\textwidth]{span_counts}
+        \caption{Histograms for the number of spans per document, the max number of references to the same span in a dialogue and the number of
+        spans never referenced in a dialogue }
+        \label{fig:histogram-spans}
+    \end{figure}
+
+    There are 488 different grounding documents in the dataset that come from 5 different domains. Each document has
+    around 50 different spans. Some spans are referenced multiple times in a dialogue, the max number of references
+    to the same span are around 16. Most documents have spans that are never used, this is usually in the tens but for a few documents
+    this is significantly higher; see figure \ref{fig:histogram-spans} for the histograms.
+
+    I also created a heat map to visualise how frequent the spans from the different documents were used in the \texttt{dialogue\_domain},
+    see figure \ref{fig:heat-map-all-spans}. Given that the documents have different numbers of span, I set the frequency for spans that did not exist to -10. These
+    are therefore shown as the darkest colour in the figure. Bighter colours mean that spans is referenced more frequently in a
+    dialogue. I also included a figure that shows the heatmap just for the first 30 documents and their first 30 spans
+    so the numbers become visible, see figure \ref{fig:heat-map-first-30-spans}. Both graphics show that most spans
+    are hardly ever referenced and a few are very frequently referenced. This needs to be taken into account when
+    deciding which algorithm is going to be used used to learn what's the best grounding span for a user utterance.
+
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=0.8\textwidth]{sparsity_of_spans}
+        \caption{Heat map of the frequency a span is referenced in a dialogue. Bright fields indicate spans that are frequently
+        referenced in a dialogue, black means that span does not exist in that document}
+        \label{fig:heat-map-all-spans}
+    \end{figure}
+
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=0.8\textwidth]{sub_section_usage_of_spans}
+        \caption{Heat map of the first 30 documents and the number of references to their first 30 spans. Violet or the number
+        -10 indicates the span did not exist}
+        \label{fig:heat-map-first-30-spans}
+    \end{figure}
+
+    Initially, I thought I needed to create a list of user utterances and the dialogue history for which I need to find the
     grounding document myself using the \texttt{turns} from the \texttt{dialogue\_domain} dataset. When investigating how
     to get the already provided \href{https://github.com/doc2dial/sharedtask-dialdoc2021/blob/master/scripts/sharedtask_utils.py}{scoring script}
     to work did I learn that it was easiest to run my alogrithm of the \texttt{doc2dial\_rc} dataset already had this work done for me.
@@ -177,16 +225,6 @@
     all user utterances have their own \texttt{doc2dial\_rc} data row. User's comments or confirmations, e.g \textit{Yes.} and
     \textit{Ok.} are omitted.
 
-
-
-    \item How many grounding documents where there?
-    \item How were they used in the dialogue?, How do I know which document was referenced in the dialogue?
-    \item What was the format and type of the data?, What data type was the data?,
-    Was the document already split into spans and how?
-    \item How much data do I have?. How many spans does a document have?, How often is each span used in the dialogue?,
-    Was each document used?
-    \item How do I best interact and query the dataset?,Do I continue to use panda's dataframe or do I directly query
-    the arrow dataset?
 
 
     Notes: about F1 scores and so the rest of the metrics is not in use if the no answer probability is not used (which was not part of the exercise
