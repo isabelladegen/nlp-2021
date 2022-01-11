@@ -41,6 +41,7 @@
 \usepackage{graphicx}
 \usepackage{textcomp}
 \usepackage{outlines}
+\usepackage{tabularx}
 \graphicspath{ {./images/} }
 \setlength\titlebox{5cm}
 \colingfinalcopy
@@ -53,18 +54,13 @@
     \maketitle
 
     \begin{abstract}
-        How does an embeddings based approach for finding the grounding documents to a user question compare to ....
-
+        This reports describes an embeddings based approach for finding the
+        grounding documents to a user question to solve subtask 1 of the
+        \href{https://doc2dial.github.io/workshop2021/shared.html}{DialDoc21 shared task}.
     \end{abstract}
-
-    focus on developing your understanding of designing,  building,  and evaluating an NLP system.
-    We are looking for a scientific approach to designing and evaluating the system and a technically sound implementation,
-    based on what we have learned during the unit.
 
 
     \section{Introduction}\label{sec:introduction}
-    Motivation and Approach:
-
     This report describes the method, experiment setup, results and conclusions for the 2021 Dialogue and Narrative
     coursework.
 
@@ -72,35 +68,23 @@
     the semester. I focused on designing, implementing and evaluating a simple embeddings based solution for
     subtask 1 from the DialDoc21
     competition \cite{feng-etal-2020-doc2dial}.
-    This allowed me to learn how a simple solution compares to the submissions that topped the leaderboard,
-    while developing my python programing skills and
-    learing how to implement, evaluate and keep track of experiments and results for an NLP system.
+    This allowed me to learn how such a solution compares to the submissions that topped the leaderboard,
+    while developing my Python programing skills and
+    learning how to implement, evaluate and keep track of experiments and results for an NLP system.
 
-    I started with building my understanding about the Doc2Dial dataset \cite{feng-etal-2020-doc2dial} using Jupyter notebooks
+    I started off building my understanding about the Doc2Dial dataset \cite{feng-etal-2020-doc2dial} using Jupyter notebooks
     before experimenting with an embeddings algorithm called Doc2Vec from Gensim \cite{doc2vec}.
-    To run multiple experiments and vary with the hyperparameters of the system,
+    To run multiple experiments and learn how the different hyper parameters of the Doc2Vec impacted the performance of the
+    system,
     I moved the Python code into a Python module, wrote Unit Tests for the important functions, moved the configuration
-    into a Configuration Dataclass and logged each experiment using
-    the Weights \& Biases platform \cite{wandb}. For the rest of this report I'm going to refer to the Weights \& Biases
-    as wandb
+    into a configuration cataclass and logged each experiment using
+    the Weights \& Biases platform \cite{wandb} (For the rest of this report I'm going to refer to the Weights \& Biases
+    as wandb).
 
-    The following sections go into more details about each step.
-
-%    TODO - how to be able to reproduce an experiment?
-    Conda environment for this coursework build from the conda.yml file. Only version fixed is Python 3.9 as I want
-    to use the latest versions for all other libraries. Wandb \cite{wandb} automatically produces an \texttt{requirements.txt}
-    file for each run that lists the exact version of each library at the time of the run to help with reproducibility.
-
-
-    \section{Technical Background}\label{sec:technical-background}
-
-    - Describe Doc2Vec background
-    - Describe Wand
-
-    Include https://arxiv.org/abs/1405.4053v2
-
-    - squad\_v2 score Notes: about F1 scores and so the rest of the metrics is not in use if the no answer probability is not used (which was not part of the exercise
-    see \cite{squad2git}
+    Section \ref{sec:method}
+    describes the method used for each of the main steps: Understanding the data, random guessing as baseline, Doc2Vec embeddings
+    and parameter experimentation. The Experiment Setup section \ref{sec:experiment-setup} and the Results section \ref{sec:results}
+    keep referring back to these steps too. Finally I summarise my conclusions in \ref{sec:conclusions}
 
 
     \section{Method}\label{sec:method}
@@ -162,13 +146,23 @@
 
     My goals was to gain a better high level understanding of what parameters affected the results for Doc2Vec and not to
     find the best Doc2Vec solution. I also wanted to learn wandb as a way to keep track of experiments and making it easier
-    to reproduce experiments.
+    to reproduce experiments. As I've made the decision to train a Doc2Vec model for each grounding document and
+    due to the model only being trained on the \texttt{document\_domain} dataset and not on the
+    \texttt{doc2dial\_rc} dataset both the train and validation dataset of \texttt{doc2dial\_rc} could be used to validate
+    the training. I ended up using 20\% of the \texttt{doc2dial\_rc} training dataset for validating the
+    impact of different parameters. I varied the parameters: dm, epochs, number of most similar docs returned and weather
+    the algorithm was given just the user question or also the dialogue history. To evaluate the different configurations
+    I used runtime, exact match and F1 score. To evaluate the impact of different parameters I used wandb's sweep capability.
 
 
     \section{Experiment Setup}\label{sec:experiment-setup}
 
-    All experiments were run within the nlp-2021 conda environment on my mac. The conda environment is built and updated using the
-    \href{https://github.com/isabelladegen/nlp-2021/blob/main/conda.yml}{conda.yml} file. The
+    All experiments were run within the nlp-2021 conda environment on my mac \cite{conda_forge_community_2015_4774216}.
+    The conda environment is built and updated using the
+    \href{https://github.com/isabelladegen/nlp-2021/blob/main/conda.yml}{conda.yml} file. Only the version of Python is
+    fixed to 3.9, for the other libraries I wanted to use the newest version. Wandb \cite{wandb} automatically produces
+    an \texttt{requirements.txt}
+    file for each run that lists the exact version of each library at the time of the run to help with reproducibility. The
     \href{https://github.com/isabelladegen/nlp-2021}{Readme} on Github describes how to setup the environment as well
     as how to run a wandb experiment.
 
@@ -209,7 +203,7 @@
         \2 \texttt{infer\_vector()} for question
         \2 Find the most similar vector \texttt{model.dv.most\_similar([vector], topn=1)}
         \2 Find the original span for the most similar vector
-        \1 Evaluate using \texttt{squad\_v2}
+        \1 Evaluate using \texttt{squad\_v2} \cite{squad2git,gitTheStandfordQADataset,Rajpurkar2016SQuAD10}
     \end{outline}
 
     The \href{https://github.com/isabelladegen/nlp-2021/blob/main/notebooks/Doc2VecSolutionForSectionsForSubtask1.ipynb}{Doc2VecSolutionForSectionsForSubtask1.ipynb}
@@ -238,7 +232,11 @@
     \end{outline}
 
     Wandb automatically takes a snapshot of the Python environment, creates a requirements.txt file and uploads all this
-    data to wandb. It forces to be given a configuration which also gets logged and uploaded.
+    data to wandb. The logged the evaluation measures during the run and the hyperparameters came from the configuration
+    file and got automatically logged too.
+
+    I first ran a few experiments until I was satisfied that things were working and everything was logged correctly before
+    running sweeps.
 
 
     \section{Results}\label{sec:results}
@@ -341,25 +339,206 @@
         \label{table:simple-doc2vec-results}
     \end{table}
 
+    \subsection{Parameter Experimentation}\label{subsec:experimentation-results}
+
+    Table \ref{table:simple-doc2vec-results} explains the different parameters configurations and how they influence
+    the F1 score and exact match. Parameters that do well for F1 seem to effect exact match negatively and
+    visa versa. Good parameters for F1 are dm 0 (Bag of words), using 150 epochs, not using the history of the question
+    and using the two or three most likely spans for the answer. Bigger vector sizes work better but it's not as
+    important as the other parameters, see table \ref{table:5-best-f1}. Bad parameters for F1 are only using the on most likely span to answer,
+    keeping the dialogue history, using only 50 epochs, dm 1. Smaller vector sizes tend to result in less good F1 scores
+    but again it's not as influential as the other parameters, see table \ref{table:5-worst-f1}. On the other hand good parameters for exact match are
+    only using the most likely span (direct contradiction to F1), not using the dialogue history,
+    using more than 100 epochs and generally bigger vector sizes work better but again it's not as influential, see table
+    \ref{table:5-best-exact}. Bad parameters
+    for exact match are, using the three most likely spans, see table \ref{table:5-worst-exact}.
+    The other parameters matter too but are not as important for exact match. Unsurprisingly the best parameters for runtime are,
+    dm 0, using few epochs and smaller vector sizes, see table \ref{table:5-best-runtime}. However these lead to worse F1 and exact match. However, the
+    runtime was not a limiting factor with Doc2Vec in the setup that I've used it.
+
+    The parallel coordinates chart also show the impact of different parameters on the F1 score and
+    exact match, see figures \ref{fig:parallel-coordinates-f1} and \ref{fig:parallel-coordinates-exact-match}.
+
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=0.8\textwidth]{parallel-coordinates-F1}
+        \caption{Parallel coordinates chart for F1 score}
+        \label{fig:parallel-coordinates-f1}
+    \end{figure}
+
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=0.8\textwidth]{parallel-coordinates-exact-match}
+        \caption{Parallel coordinates chart for exact match}
+        \label{fig:parallel-coordinates-exact-match}
+    \end{figure}
+
 
     \section{Conclusions}\label{sec:conclusions}
-    share any insights you gained about how the system works.
-    - solution is inferior to any solution on the leaderboard but better than random guessing
-    - F1 and exact match are hard to both optimise, better F1 means bad exact match
-    -   problem came from me allowing the algorithm to return multiple spans that could be from all over the document.
-    had I only allowed spans from the same sections with the highest probability F1 and exact match might not have been opposite
 
-    - curious to know how well word2vec would have worked
+    My solution is not surprisingly inferior to the submissions that topped the leaderboard. However, after a little bit
+    of tuning it achieved F1 scores of around 23 and was better than random guessing a span from the grounding document.
+    F1 and exact match are hard to both optimise: a better F1 in my experiment directly lead to worse exact match.
+    To achieve a good exact match
+    only the most likely span should be used. This has to do with the the model returning spans even when they are not next to
+    each other in the document. However, for utterances that have more than one grounding span,
+    these grounding spans follow each other and are not from all over the document. I can think of two ways to improve this:
+    return more than one most likely
+    span but only if they are next to each other, use sections instead of spans as this showed to be more promising.
+    However, I've not tried these. Table \ref{table:simple-doc2vec-results} summarieses a few conclusions about the
+    different hyper parameters.
 
-    \subsection{Learnings}\label{subsec:learnings}
-    - focus on building the end to end pipeline before diving into the data, endless time can be spent analysing the data
-    but having an end to end process going actually helps focusing what areas need more analysis
-    - keeping the data mangling code out of notebooks and in tested python code
-    - Build configuration and experiment tracking in from the start, I lost a lot of time forgetting what I've tried before I
-    moved to tracking all parameters on Weights and Biases
+    I've certainly learned a lot and became more familiar with how to implement an NLP system. Based on this experience I would do a
+    few things differently:
+    \begin{itemize}
+        \item Focusing first on building the simplest system end to end before diving into data analysis. I spent a lot of
+        time analysing the dialogue dataset that I didn't even ended up using. I believe having the system working end to
+        end provides a good focus on what areas need analysing.
+        \item Writing pure Python using test-driven development from the beginning. I had quite a few bad bugs in my
+        Jupyter notebook code that I would have found earlier. The tests, when written well, can also be a great living
+        document on how the code works.
+        \item Use an experiment tracking tool and keep all configuration away from the rest of the code from the get go.
+        I spend a lot of time forgetting what I've tried and remembering F1 scores I then never could achieve again. Using
+        an experiment tracking tool certainly helped me being able to reproduce and remember what I've tried and what results
+        this achieved.
+        \item Be prepared to try different solutions quickly and setting up a pipeline where the model can be easily changed
+        to many different models.
+    \end{itemize}
 
+    I've already made use of these learning for my other coursework.
 
     \bibliographystyle{coling}
     \bibliography{bibliography}
+
+    \begin{table}[p]
+        \centering
+        \begin{tabularx}{\textwidth}{|X|X|X|X|X|X|X|X|X|}
+            \hline
+            Sweep no & Runtime (s) & Vector Size & Dm & Epochs & Pre process Question & \# Most Likely Spans & F1 & Exact Match \\ \hline
+            64       & 59          & 100         & 0  & 150    & 1                    & 2                    & 23.82 & 0.15        \\ \hline
+            72       & 61          & 100         & 0  & 150    & 1                    & 3                    & 23.80 & 0.02        \\ \hline
+            70       & 61          & 70          & 0  & 150    & 1                    & 3                    & 23.74 & 0.02        \\ \hline
+            71       & 58          & 80          & 0  & 150    & 1                    & 3                    & 23.73 & 0.02        \\ \hline
+            63       & 58          & 80          & 0  & 150    & 1                    & 2                    & 23.49 & 0.12        \\ \hline
+        \end{tabularx}
+        \caption{5 best configurations for F1 score}
+        \label{table:5-best-f1}
+    \end{table}
+
+    \begin{table}[p]
+        \centering
+        \begin{tabularx}{\textwidth}{|X|X|X|X|X|X|X|X|X|}
+            \hline
+            Sweep no & Runtime (s) & Vector Size & Dm & Epochs & Pre process Question & \# Most Likely Spans & F1 & Exact Match \\ \hline
+            1        & 41          & 30          & 0  & 50     & 0                    & 1                    & 15.46 & 1.49        \\ \hline
+            97       & 86          & 30          & 1  & 100    & 0                    & 1                    & 15.41 & 1.47        \\ \hline
+            80       & 41          & 100         & 1  & 50     & 1                    & 1                    & 15.14 & 1.64        \\ \hline
+            74       & 51          & 70          & 1  & 50     & 0                    & 1                    & 15.02 & 1.62        \\ \hline
+            76       & 53          & 100         & 1  & 50     & 0                    & 1                    & 14.90 & 1.40        \\ \hline
+        \end{tabularx}
+        \caption{5 worst configurations for F1 score}
+        \label{table:5-worst-f1}
+    \end{table}
+
+    \begin{table}[p]
+        \centering
+        \begin{tabularx}{\textwidth}{|X|X|X|X|X|X|X|X|X|}
+            \hline
+            Sweep no & Runtime (s) & Vector Size & Dm & Epochs & Pre process Question & \# Most Likely Spans & F1 & Exact Match \\ \hline
+            56       & 60          & 100         & 0  & 150    & 1                    & 1                    & 20.83 & 4.50        \\ \hline
+            30       & 46          & 70          & 0  & 100    & 1                    & 1                    & 19.72 & 4.50        \\ \hline
+            54       & 59          & 70          & 0  & 150    & 1                    & 1                    & 20.47 & 4.43        \\ \hline
+            127      & 94          & 80          & 1  & 150    & 1                    & 1                    & 20.28 & 4.38        \\ \hline
+            55       & 59          & 80          & 0  & 150    & 1                    & 1                    & 20.66 & 4.36        \\ \hline
+        \end{tabularx}
+        \caption{5 best configurations for exact match}
+        \label{table:5-best-exact}
+    \end{table}
+
+    \begin{table}[p]
+        \centering
+        \begin{tabularx}{\textwidth}{|X|X|X|X|X|X|X|X|X|}
+            \hline
+            Sweep no & Runtime (s) & Vector Size & Dm & Epochs & Preprocess Question & \# Most Likely Spans & F1 & Exact Match \\ \hline
+            113      & 86          & 30          & 1  & 100    & 0                   & 3                    & 19.00 & 0           \\ \hline
+            140      & 144         & 100         & 1  & 150    & 0                   & 3                    & 19.55 & 0           \\ \hline
+            24       & 30          & 100         & 0  & 50     & 1                   & 3                    & 20.19 & 0           \\ \hline
+            17       & 38          & 30          & 0  & 50     & 0                   & 3                    & 19.10 & 0           \\ \hline
+            21       & 30          & 30          & 0  & 50     & 1                   & 3                    & 20.50 & 0           \\ \hline
+        \end{tabularx}
+        \caption{5 worst configurations for exact match}
+        \label{table:5-worst-exact}
+    \end{table}
+
+    \begin{table}[p]
+        \centering
+        \begin{tabularx}{\textwidth}{|X|X|X|X|X|X|X|X|X|}
+            \hline
+            Sweep no & Runtime (s) & Vector Size & Dm & Epochs & Preprocess Question & \# Most Likely Spans & F1 & Exact Match \\ \hline
+            15       & 29          & 80          & 0  & 50     & 1                   & 2                    & 19.56 & 0.17        \\ \hline
+            23       & 30          & 80          & 0  & 50     & 1                   & 3                    & 20.40 & 0           \\ \hline
+            22       & 30          & 70          & 0  & 50     & 1                   & 3                    & 20.28 & 0           \\ \hline
+            24       & 30          & 100         & 0  & 50     & 1                   & 3                    & 20.19 & 0           \\ \hline
+            21       & 30          & 30          & 0  & 50     & 1                   & 3                    & 20.50 & 0           \\ \hline
+        \end{tabularx}
+        \caption{5 best configurations for runtime including preprocessing, training and prediction time}
+        \label{table:5-best-runtime}
+    \end{table}
+
+    \begin{table}[p]
+        \centering
+        \begin{tabularx}{\textwidth}{|X|X|X|X|X|X|X|X|X|}
+            \hline
+            Sweep no & Runtime (s) & Vector Size & Dm & Epochs & Preprocess Question & \# Most Likely Spans & F1 & Exact Match \\ \hline
+            122      & 125         & 70          & 1  & 150    & 0                   & 1                    & 16.87 & 1.86        \\ \hline
+            141      & 127         & 30          & 1  & 150    & 1                   & 3                    & 23.18 & 0           \\ \hline
+            138      & 127         & 70          & 1  & 150    & 0                   & 3                    & 19.12 & 0.02        \\ \hline
+            124      & 127         & 100         & 1  & 150    & 0                   & 1                    & 17.05 & 1.86        \\ \hline
+            129      & 128         & 30          & 1  & 150    & 0                   & 2                    & 18.78 & 0.05        \\ \hline
+        \end{tabularx}
+        \caption{5 worst configurations for runtime including preprocessing, training and prediction time}
+        \label{table:5-worst-runtime}
+    \end{table}
+
+    \begin{table}[p]
+        \centering
+        \begin{tabularx}{\textwidth} {|X|X|X|X|X|}
+            \hline
+            \textbf{Parameter} &
+            \textbf{Range} &
+            \textbf{F1} &
+            \textbf{Exact match} &
+            \textbf{Summary} \\ \hline
+            \textbf{Vector size} &
+            30, 70, 80, 100 &
+            \textgreater{}30 works well &
+            \textgreater{}30 works well &
+            Surprisingly, not that influential as long as it's not too small \\ \hline
+            \textbf{DM} &
+            0: PV-DBOW, bag of words; 1: PV-DM, distributed memory &
+            PV-DBOW works better &
+            PV-DBOW works better &
+            Surprisingly, it works better to treat each span as a bag of words instead of attempting to learn places of words within a span \\ \hline
+            \textbf{Epochs} &
+            50, 100, 150 &
+            More work better &
+            More work better &
+            Unsurprisingly, more epochs work better, but they also mean a significant increase in training time \\ \hline
+            \textbf{Preprocess Question} &
+            0: rc question including history; 1: only the first 'user:' question of each rc question → excluding the dialogue history &
+            Better to just pass the question without the dialogue history &
+            Clearly better to not pass the history and only pass the current question &
+            Given that this model evaluates the similarity between to documents (question and spans of the grounding doc)
+            it's not surprising that the history of what came before does not matter and actually hinders the performance \\ \hline
+            \textbf{\# Of Most Likely Spans} &
+            1, 2, 3: Number of most likely spans returned and combined into the most likely answer &
+            Better to return top 3 most likely spans &
+            Better to only return the most likely span. Both two and three most likely spans perform badly &
+            Directly opposite influence on F1 and exact match. This might also be because the x most likely spans are not
+            forced to follow each other in the document which is bad for exact match \\ \hline
+        \end{tabularx}
+        \caption{Overview different Doc2Vec hyperparameters impacting F1 score and exact match}
+        \label{table:simple-doc2vec-results}
+    \end{table}
 
 \end{document}
