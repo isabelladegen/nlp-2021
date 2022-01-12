@@ -55,9 +55,10 @@
     \maketitle
 
     \begin{abstract}
-        This reports describes an embeddings based approach for finding the
+        I've used an embeddings based approach for finding the
         grounding documents to a user question to solve subtask 1 of the
-        \href{https://doc2dial.github.io/workshop2021/shared.html}{DialDoc21 shared task}.
+        \href{https://doc2dial.github.io/workshop2021/shared.html}{DialDoc21 shared task}. Unsurprisingly, this
+        does not compete with the best solutions but it does beat random guessing.
     \end{abstract}
 
 
@@ -69,29 +70,28 @@
     the semester. I focused on designing, implementing and evaluating a simple embeddings based solution for
     subtask 1 from the DialDoc21
     competition \cite{feng-etal-2020-doc2dial}.
-    This allowed me to learn how such a solution compares to the submissions that topped the leaderboard,
-    while developing my Python programing skills and
-    learning how to implement, evaluate and keep track of experiments and results for an NLP system.
+    I wanted to get a sense how an embeddings based solution compared to the submissions that topped the leaderboard,
+    while also developing my Python programing skills and
+    learning how to implement, evaluate and keep track of experiments and results for an NLP system.\\
 
-    I started off building my understanding about the Doc2Dial dataset \cite{feng-etal-2020-doc2dial} using Jupyter notebooks
+    I started off by building my understanding about the Doc2Dial dataset \cite{feng-etal-2020-doc2dial} using Jupyter notebooks
     before experimenting with an embeddings algorithm called Doc2Vec from Gensim \cite{doc2vec}.
-    To run multiple experiments and learn how the different hyper parameters of the Doc2Vec impacted the performance of the
+    To run multiple experiments and learn how the different hyper parameters of the Doc2Vec model impacted the performance of the
     system,
-    I moved the Python code into a Python module, wrote Unit Tests for the important functions, moved the configuration
-    into a configuration cataclass and logged each experiment using
-    the Weights \& Biases platform \cite{wandb} (For the rest of this report I'm going to refer to the Weights \& Biases
-    as wandb).
+    I wrote a Python module, with Unit Tests for the important functions and logged each experiment using
+    the Weights \& Biases platform \cite{wandb}. For the rest of this report I'm going to refer to the Weights \& Biases
+    platform by its Python package name wandb.\\
 
     Section \ref{sec:method}
-    describes the method used for each of the main steps: Understanding the data, random guessing as baseline, Doc2Vec embeddings
+    describes the method used for each of the main steps: Understanding the data, random guessing as a baseline, Doc2Vec embeddings
     and parameter experimentation. The Experiment Setup section \ref{sec:experiment-setup} and the Results section \ref{sec:results}
-    keep referring back to these steps too. Finally I summarise my conclusions in \ref{sec:conclusions}
+    keep referring back to these steps. Finally, I summarise my conclusions in section \ref{sec:conclusions}
 
 
     \section{Method}\label{sec:method}
 
     \subsection{Understanding the Data}\label{subsec:understanding-the-data-method}
-    Before starting to develop an algorithm I wanted to get an understanding of the dat available.
+    Before starting to develop an algorithm I wanted to get an understanding of the data available.
     There are three datasets for the Doc2dial competition available on \href{https://huggingface.co/datasets/doc2dial}{Hugging Face}:
     \begin{itemize}
         \item dialogue\_domain with data split train and validation
@@ -99,60 +99,66 @@
         \item doc2dial\_rc with data split train and validation
     \end{itemize}
 
-    I wanted to answer the following questions:
+    I wanted to answer the following questions about this data:
     \begin{itemize}
         \item What are the different datasets and how can I use them?
-        \item How many grounding documents where there?
-        \item How were they used in the dialogue?, How do I know which document was referenced in the dialogue?
-        \item What was the format and type of the data?, What data type was the data?,
-        Was the document already split into spans and how?
-        \item How much data do I have?. How many spans does a document have?, How often is each span used in the dialogue?,
-        Was each document used?
-        \item How do I best interact and query the dataset?,Do I continue to use panda's dataframe or do I directly query
+        \item How many grounding documents are there?
+        \item How are they used in the dialogue?
+        \item How do I know which document is referenced in the dialogue?
+        \item What is the format and type of the data?
+        \item What data types are used?
+        \item Is the document already split into spans and how?
+        \item How much data do I have?
+        \item How many spans does a document have?
+        \item How often is each span used in the dialogue?
+        \item Is each document used?
+        \item How do I best interact and query the dataset?
+        \item Should I use panda's dataframes or do I directly query
         the arrow dataset?
     \end{itemize}
 
     \subsection{Random Guessing as Baseline}\label{subsec:random-guessing-method}
-    Before diving into an NLP algorithm solution to subtask1, I wanted gain an idea of how well a program that randomly guessed a
-    grounding span scores. This served me as baseline for the rest of the work.
+    Before diving into an NLP algorithm solution to subtask1, I wanted to gain an idea of how well a program that randomly guessed a
+    grounding span scores. This served me as baseline for the rest of my experiments.
 
     \subsection{Doc2Vec embeddings}\label{subsec:doc2vc-method}
     Next I wanted to establish how well I could predict the right span of the grounding document for a user question using
     embeddings. Instead of the \texttt{word2vec} algorithm from gensim that we've used in the semester I decided to use
     \texttt{doc2vec} \cite{doc2vec} for the simple reason that I was trying to predict the most similar span to a user utterance, not jsut
-    the most similar word. Doc2Vec creates a vector representation for the a document irrespective of it's length.
-    While Word2Vec crates a vector for each word in the corpus, Doc2Vec creates a vector for each document in the corpus.
+    the most similar word. Doc2Vec creates a vector representation for a document (think span) irrespective of it's length.
+    In comparison: Word2Vec crates a vector for each word in the corpus, Doc2Vec creates a vector for each document in the corpus.
     In the case of subtask1 the corpus would be the grounding document form the \texttt{documents\_domain} dataset
     and the documents would be the spans or sections of these grounding documents. Once the model is trained
     it can be used to predict the n most similar documents for a new input document. To do so the vector representation
     for the new input document is calculated. This vector is then compared to all the vectors in the model. Similarity
-    is established using the cosine method and the n most similar documents used during training are returned for the prediction.
-    Care has to be taken to preprocess the input vectors during predictions
+    is established using the cosine method. Doc2Vec provides a function to access the n most similar documents used during training
+    for a new vector which in our case would be the user utterance for which we'd like to find the grounding spans.
+    Care has to be taken to preprocess the documents used for predictions in
     the same way as the documents were processed during training.
 
     I trained a Doc2vec model for each of the grounding documents. This meant that I could simply predict
-    the most similar span to a question using the model for that grounding document. I also trained Doc2Vec on sections instead
-    of spans.
+    the most similar span to a question using the model for that grounding document. I also experimented with training Doc2Vec on
+    sections instead of spans.
 
     \subsection{Parameter Experimentation}\label{subsec:experimentation-method}
     I started off implementing Doc2Vec in Jupyter notebooks and got the first initial findings. However, there are loads
     of possible configurations such as: using spans or sections as documents, different methods of preprocessing the spans, different
     hyperparameter configurations for Doc2Vec and different possibilities of creating the answers from just the most similar
-    document to combining a few most similar documents. It's no wonder that I soon got lost in the Jupyter notebooks, struggled
-    to remember what I've ran with which parameters and
-    decided that it was time to keep track of the different experiment by moving my code into Python scripts. I also took
-    the opertunity to add unit tests for the most important methods and not surprisingly found mistakes.
-    Finally, I added wandb as experiment tracking platform to automatically log all configurations and results for each of
-    the various runs \cite{wandb}.
+    document to combining a few most similar documents. It's no wonder that I soon got lost in the Jupyter notebooks as
+    I struggled to remember what I've ran with which parameters. I decided
+     that it was time to keep track of the different experiment by moving my code into Python scripts. I also took
+    the opportunity to add unit tests for the most important methods and not surprisingly found mistakes. And
+    finally, I added wandb as experiment tracking platform to automatically log all configurations and results for each of
+    the various runs \cite{wandb} which then enabled me to better compare the results for the different experiments.\\
 
-    My goals was to gain a better high level understanding of what parameters affected the results for Doc2Vec and not to
+    My goal was to gain a better high level understanding of what parameters affected the results for Doc2Vec, not to
     find the best Doc2Vec solution. I also wanted to learn wandb as a way to keep track of experiments and making it easier
     to reproduce experiments. As I've made the decision to train a Doc2Vec model for each grounding document and
     due to the model only being trained on the \texttt{document\_domain} dataset and not on the
-    \texttt{doc2dial\_rc} dataset both the train and validation dataset of \texttt{doc2dial\_rc} could be used to validate
-    the training. I ended up using 20\% of the \texttt{doc2dial\_rc} training dataset for validating the
-    impact of different parameters. I varied the parameters: dm, epochs, number of most similar docs returned and weather
-    the algorithm was given just the user question or also the dialogue history. To evaluate the different configurations
+    \texttt{doc2dial\_rc} dataset both the train and validation dataset of \texttt{doc2dial\_rc} could be used to validate the system.
+    I ended up using 20\% of the \texttt{doc2dial\_rc} training dataset for experimenting with the
+    impact of different hyper parameters. I've varied the following hyper parameters: dm, epochs, number of most similar docs returned and changed
+    if the algorithm was given the user question only or also the dialogue history. To evaluate the different configurations
     I used runtime, exact match and F1 score. To evaluate the impact of different parameters I used wandb's sweep capability.
 
 
@@ -162,7 +168,7 @@
     The conda environment is built and updated using the
     \href{https://github.com/isabelladegen/nlp-2021/blob/main/conda.yml}{conda.yml} file. Only the version of Python is
     fixed to 3.9, for the other libraries I wanted to use the newest version. Wandb \cite{wandb} automatically produces
-    an \texttt{requirements.txt}
+    a \texttt{requirements.txt}
     file for each run that lists the exact version of each library at the time of the run to help with reproducibility. The
     \href{https://github.com/isabelladegen/nlp-2021}{Readme} on Github describes how to setup the environment as well
     as how to run a wandb experiment.
@@ -172,39 +178,39 @@
     \href{https://github.com/isabelladegen/nlp-2021/blob/main/notebooks/DataInvestigationDoc2Dial.ipynb}{DataInvestigationDoc2Dial.ipynb}
     and \href{https://github.com/isabelladegen/nlp-2021/blob/main/notebooks/RCDataInvestigation.ipynb}{RCDataInvestigation.ipynb}.
     The notebooks download the downloaded from \href{https://huggingface.co/datasets/doc2dial}{Hugging Face}
-    using \texttt{load\_datasets} and import into pandas dataframes \cite{reback2020pandas} to make use of
-    \texttt{describe()}, \texttt{info()}, \texttt{value\_counts()}, \texttt{json\_normalize()}. To gain more insights
+    using \texttt{load\_datasets} and import them into pandas dataframes \cite{reback2020pandas} to be able to make use of their
+    \texttt{describe()}, \texttt{info()}, \texttt{value\_counts()}, \texttt{json\_normalize()} functions. To gain more insights
     about how the grounding documents from \texttt{document\_domain} are used in in the \texttt{dialogue\_domain},
-    I wrote a procedure to combine the two and and count for each document the number of dialogs, number of turns, number of user utterances,
+    I wrote a procedure to combine the two and and counted for each document the number of dialogs, number of turns, number of user utterances,
     number of agent utterances, number of spans, number of references to the most used span, number of spans that are never referenced.
     I also wrote a procedure to combine the \texttt{doc2dial\_rc} with \texttt{dialogue\_domain} dataset so I could understand
-    this data set better. I used \texttt{matplotlib} \cite{matplotlib} and \texttt{seaborn} \cite{seaborn} to visualise
+    this dataset better. I used \texttt{matplotlib} \cite{matplotlib} and \texttt{seaborn} \cite{seaborn} to visualise
     some of my findings.
 
     \subsection{Random Guessing as Baseline}\label{subsec:random-guessing-experiment}
-    For random guessing I loop through each of the questions in the \texttt{doc2dial\_rc} datataset and simply guess a
-    random span id from the number of spans for each grounding document. The code including the results for this experiment
+    For random guessing I loop through each of the questions in the \texttt{doc2dial\_rc} datataset and simply guessed a
+    random \texttt{span\_id} from the number of spans for each grounding document. The code including the results for this experiment
     can be found at the bottom of the
     \href{https://github.com/isabelladegen/nlp-2021/blob/main/notebooks/Doc2VecSolutionForSpansForSubtask1.ipynb}{Doc2VecSolutionForSpansForSubtask1.ipynb}
-    Jupyter notebook. To evaluate random guessing I used the \texttt{squad\_v2} metric and built the predictions and
-    references for the metric the same way the
+    Jupyter notebook. To evaluate random guessing, I used the same \texttt{squad\_v2} metric and built the predictions and
+    references for the metric in the same way the
     \href{https://github.com/doc2dial/sharedtask-dialdoc2021/blob/master/scripts/sharedtask_utils.py}{sharedtask\_utils.py}
     script does it.
 
     \subsection{Doc2Vec embeddings}\label{subsec:doc2vec-experiment}
-    To initial Doc2Vec solution can be found in the \href{https://github.com/isabelladegen/nlp-2021/blob/main/notebooks/Doc2VecSolutionForSpansForSubtask1.ipynb}{Doc2VecSolutionForSpansForSubtask1.ipynb}
+    The initial Doc2Vec solution can be found in the \href{https://github.com/isabelladegen/nlp-2021/blob/main/notebooks/Doc2VecSolutionForSpansForSubtask1.ipynb}{Doc2VecSolutionForSpansForSubtask1.ipynb}
     Jupyter notebook.
     On a high level the steps are:
     \begin{outline}[enumerate]
-        \1 Read the training docs for each grounding document \texttt{raw\_training\_docs\_per\_doc=\{doc\_id:[raw spans]\}}
-        \1 Preprocess the docs \texttt{tokenized\_training\_docs=\{doc\_id:[\{span\_id:[tokenized and preprocessed span]\}]\}}
-        \1 Train a model for each grounding document \texttt{models\_for\_doc=\{doc\_id: model\}}
-        \1 Predict most similar span for each question from the \texttt{doc2dial\_rc} dataset
+        \1 Read the training docs for each grounding document\\ \texttt{raw\_training\_docs\_per\_doc=\{doc\_id:[raw spans]\}}
+        \1 Preprocess the docs\\ \texttt{tokenized\_training\_docs=\{doc\_id:[\{span\_id:[tokenized and preprocessed span]\}]\}}
+        \1 Train a model for each grounding document\\ \texttt{models\_for\_doc=\{doc\_id: model\}}
+        \1 Predict the most similar span for each question from the \texttt{doc2dial\_rc} dataset:
         \2 Preprocess the question like in step 2.
-        \2 \texttt{infer\_vector()} for question
+        \2 Call \texttt{infer\_vector()} for the question
         \2 Find the most similar vector \texttt{model.dv.most\_similar([vector], topn=1)}
         \2 Find the original span for the most similar vector
-        \1 Evaluate using \texttt{squad\_v2} \cite{squad2git,gitTheStandfordQADataset,Rajpurkar2016SQuAD10}
+        \1 Evaluate using the \texttt{squad\_v2} metrics \cite{squad2git}, \cite{gitTheStandfordQADataset} and \cite{Rajpurkar2016SQuAD10}
     \end{outline}
 
     The \href{https://github.com/isabelladegen/nlp-2021/blob/main/notebooks/Doc2VecSolutionForSectionsForSubtask1.ipynb}{Doc2VecSolutionForSectionsForSubtask1.ipynb}
@@ -219,7 +225,7 @@
         domain data and preprocesses the questions.
         \1 \textbf{Training \& Prediction}: The \texttt{train\_and\_predict.py} has a \texttt{TrainedModel} class that is a wrapper around
         Doc2Vec and a \texttt{BatchTrainer} that manages the models for each document.
-        \1 \textbf{Evaluation}: The \texttt{evaluate.py} file is dealing with creating and running the \texttt{squad\_v2} metrics for the predictions
+        \1 \textbf{Evaluation}: The \texttt{evaluate.py} script is dealing with creating and running the \texttt{squad\_v2} metrics for the predictions
         \1 \textbf{Configuration}: The \texttt{Configuration.py} dataclass is used to store all the default configurations including
         the model's hyperparameters. It is also used as the \texttt{wand.config}.
         \1 \textbf{Run an experiment}: The \texttt{run\_experiment.py} script is used to run an experiment.
@@ -227,14 +233,14 @@
         The experiment can be named and tagged here or later on the wandb website.
         \1 \textbf{Run a sweep}: The \texttt{sweep.py} script is used to run a wand sweep where multiple parameters are tested.
         There's a configuration at the top of the file that is used for the different hyper parameters to be sweeped.
-        Any parameter not set there will be taken from the default configuration.
+        Any parameter not set here will be taken from the default configuration.
         \1 \textbf{Unit tests}: the unit tests can be found in the \href{https://github.com/isabelladegen/nlp-2021/tree/main/tests}{tests}
         folder. They have data builders to quickly create fake data and make sure everything works properly.
     \end{outline}
 
     Wandb automatically takes a snapshot of the Python environment, creates a requirements.txt file and uploads all this
-    data to wandb. The logged the evaluation measures during the run and the hyperparameters came from the configuration
-    file and got automatically logged too.
+    data to wandb. The evaluation measures are logged during the run and the hyper parameters saved to the configuration
+    and are automatically logged to wandb.
 
     I first ran a few experiments until I was satisfied that things were working and everything was logged correctly before
     running sweeps.
@@ -257,15 +263,15 @@
     \end{figure}
 
     In total there are 3474 different dialogues in the training dataset. For each document there are around eight dialogues and
-    each dialogue has around a 100 turns, see figure \ref{fig:histogram-dialogue-and-turns} for teh histograms of the numbers of
+    each dialogue has around a 100 turns, see figure \ref{fig:histogram-dialogue-and-turns} for the histograms of the numbers of
     dialogues for each document and the number of turns in each dialogue.
     The training dialogue dataset only uses 415 of the 488 grounding documents.\\
 
     The \textbf{\texttt{document\_domain}} dataset contains all the different grounding documents. Note that this dataset does not have
     a training and validation data split and all documents used for training and validation are in the train split.
-    The documents share the same \texttt{doc\_id} with the \texttt{dialogue\_domain}. The full text of the document
-    can be found in \texttt{doc\_text}. The documents are already preprocessed into spans \texttt{spans} which themselves
-    use the \texttt{id\_sp} that then refers back to the \texttt{sp\_id} used in the dialogue's turns. The \texttt{text\_sp}
+    The documents use the same \texttt{doc\_id} as the dialogues in the \texttt{dialogue\_domain}. The full text of the document
+    can be found in \texttt{doc\_text}. The documents are already preprocessed into \texttt{spans} which themselves
+    use the \texttt{id\_sp} that then refers back to the \texttt{sp\_id} used in a dialogue's turns. The \texttt{text\_sp}
     contains the span text.
 
     \begin{figure}[h]
@@ -283,11 +289,11 @@
 
     I also created a heat map to visualise how frequent the spans from the different documents were used in the \texttt{dialogue\_domain},
     see figure \ref{fig:heat-map-all-spans}. Given that the documents have different numbers of span, I set the frequency for spans that did not exist to -10. These
-    are therefore shown as the darkest colour in the figure. Bighter colours mean that spans is referenced more frequently in a
-    dialogue. I also included a figure that shows the heatmap just for the first 30 documents and their first 30 spans
-    so the numbers become visible, see figure \ref{fig:heat-map-first-30-spans}. Both graphics show that most spans
-    are hardly ever referenced and a few are very frequently referenced. This needs to be taken into account when
-    deciding which algorithm is going to be used used to learn what's the best grounding span for a user utterance.
+    are therefore shown as the darkest colour in the figure. Bighter colours mean that spans are referenced more frequently in a
+    dialogue. I also included a figure that shows the heatmap for the first 30 documents and their first 30 spans
+    so the numbers become readable, see figure \ref{fig:heat-map-first-30-spans}. Both graphics show that most spans
+    are hardly ever referenced and only a few spans are frequently referenced. This needs to be taken into account when
+    deciding which algorithm is going to be used to predict the best grounding span for a user utterance.
 
     \begin{figure}[h]
         \centering
@@ -310,9 +316,9 @@
     to get the provided \href{https://github.com/doc2dial/sharedtask-dialdoc2021/blob/master/scripts/sharedtask_utils.py}{scoring script}
     to work, I learned that it was easiest to use the \textbf{\texttt{doc2dial\_rc}} dataset.
     This dataset refers to the grounding documents \texttt{doc\_id} by \texttt{title}.
-    The \texttt{id} is the combination of the \texttt{dialogue\_id\_turn\_id}. \texttt{question} is the dialogue history starting
-    with the the user question that the grounding document should be found for and listing the previous dialogue at each step.
-    Utterances for the user are marked with a \texttt{user:}, those of the agent are marked with \texttt{agent:}. Not
+    The \texttt{id} is the combination of the \texttt{dialogue\_id} and \texttt{turn\_id}. The \texttt{question} is the dialogue history starting
+    with the the user question that the grounding document should be found for and listing the previous dialogue up to this point.
+    Utterances for the user are marked with a \texttt{user:} and those of the agent are marked with \texttt{agent:}. Not
     all user utterances have their own \texttt{doc2dial\_rc} data row. User's comments or confirmations, e.g \textit{Yes.} and
     \textit{Ok.} are omitted.
 
@@ -320,13 +326,14 @@
 
     Random guessing of the 20431 question in the \texttt{doc2dial\_rc} training dataset achieved an F1 score of 11.73
     and an exact match of 1.14. For the 3972 questions in the validation dataset the F1 score was 15.37 and the exact match
-    was 1.26. These numbers obviously vary for each run but stay within the range.
+    was 1.26. These numbers obviously vary for each run but stay within this range.
 
     \subsection{Doc2Vec embeddings}\label{subsec:doc2vec-results}
 
-    The initial results for Doc2Vec and in its default configuration and using their preprocessing method is shown
+    The initial results for Doc2Vec in its default configuration using gensim's preprocessing method is shown
     in table \ref{table:simple-doc2vec-results}. Unsurprisingly the results are not fantastic but better than random
-    guessing. I should have also done random guessing for sections to do a proper analysis of sections vs spans.
+    guessing. Sections perform better for F1 and worse for exact match. I should have also done random guessing of sections
+    to be able to compare the metrics to the Doc2Vec resuts for sections.
 
     \begin{table}[h!]
         \centering
@@ -346,18 +353,18 @@
     the F1 score and exact match. Parameters that do well for F1 seem to effect exact match negatively and
     visa versa. Good parameters for F1 are dm 0 (Bag of words), using 150 epochs, not using the history of the question
     and using the two or three most likely spans for the answer. Bigger vector sizes work better but it's not as
-    important as the other parameters, see table \ref{table:5-best-f1}. Bad parameters for F1 are only using the on most likely span to answer,
-    keeping the dialogue history, using only 50 epochs, dm 1. Smaller vector sizes tend to result in less good F1 scores
+    important as the other parameters, see table \ref{table:5-best-f1}. Bad parameters for F1 are only using the most likely span to answer,
+    keeping the dialogue history, using only 50 epochs and dm 1. Smaller vector sizes tend to result in less good F1 scores
     but again it's not as influential as the other parameters, see table \ref{table:5-worst-f1}. On the other hand good parameters for exact match are
     only using the most likely span (direct contradiction to F1), not using the dialogue history,
     using more than 100 epochs and generally bigger vector sizes work better but again it's not as influential, see table
     \ref{table:5-best-exact}. Bad parameters
     for exact match are, using the three most likely spans, see table \ref{table:5-worst-exact}.
-    The other parameters matter too but are not as important for exact match. Unsurprisingly the best parameters for runtime are,
+    The other parameters matter too but are not as important for exact match. Finally, the best parameters for runtime are,
     dm 0, using few epochs and smaller vector sizes, see table \ref{table:5-best-runtime}. However these lead to worse F1 and exact match. However, the
-    runtime was not a limiting factor with Doc2Vec in the setup that I've used it.
+    runtime was not a limiting factor with Doc2Vec in my system and I could easily run it on my laptop.
 
-    The parallel coordinates chart also show the impact of different parameters on the F1 score and
+    The parallel coordinates charts also show the impact of different parameters on the F1 score and
     exact match, see figures \ref{fig:parallel-coordinates-f1} and \ref{fig:parallel-coordinates-exact-match}.
 
     \begin{figure}[h]
@@ -377,33 +384,42 @@
 
     \section{Conclusions}\label{sec:conclusions}
 
-    My solution is not surprisingly inferior to the submissions that topped the leaderboard. However, after a little bit
-    of tuning it achieved F1 scores of around 23 and was better than random guessing a span from the grounding document.
-    F1 and exact match are hard to both optimise: a better F1 in my experiment directly lead to worse exact match.
+    My solution is clearly inferior to the submissions that topped the leaderboard. Doc2Vec seems to not be able
+    to truly understand the concept behind a span. However, after a little bit
+    of tuning it achieved F1 scores of around 23 and with that was better than randomly guessing a span from the grounding document.
+    I struggled to both optimise F1 and exact match: a better F1 score in my experiment directly lead to a worse exact match.
     To achieve a good exact match
-    only the most likely span should be used. This has to do with the the model returning spans even when they are not next to
+    only the most likely span should be used. Where as to achieve a good F1 score the most likely three spans should be used.
+    The reason why returning the most likely three spans destroys the exact match is due the model returning spans that don't follow
     each other in the document. However, for utterances that have more than one grounding span,
-    these grounding spans follow each other and are not from all over the document. I can think of two ways to improve this:
-    return more than one most likely
-    span but only if they are next to each other, use sections instead of spans as this showed to be more promising.
-    However, I've not tried these. Table \ref{table:simple-doc2vec-results} summarieses a few conclusions about the
-    different hyper parameters.
-
-    I've certainly learned a lot and became more familiar with how to implement an NLP system. Based on this experience I would do a
-    few things differently:
+    these grounding spans tend follow each other and are not from all over the document. I can think of two ways to improve this:
     \begin{itemize}
-        \item Focusing first on building the simplest system end to end before diving into data analysis. I spent a lot of
+        \item return more than one most likely span only if they follow each other
+        \item use sections instead of spans as this showed to be more promising
+    \end{itemize}
+    I used very simple pre-processing step. Leaving very frequent words such as many of the articles in the pre-processed
+    spans most likely has hindered the performance of Doc2Vec. This would need to be better explored. Furthermore it
+    could be beneficial to do some logic around the probabilities of the most likely span. My solution just picks the most
+    likely spans even if they are a negative match as I don't analyse how similar they are. Furthermore, I wondered if
+    training the model both on the spans of the grounding document combined with the matching spans from the training
+    dataset would allow Doc2Vec to better learn how to associate user language with the language of the grounding document.
+    However, due to running out of time, I've not tried these ieaas. Please also consult table \ref{table:simple-doc2vec-results} for
+    a summary of my conclusions about the     different hyper parameters.\\
+
+    I've certainly learned a lot and became more familiar with implementing an NLP system. Based on what
+    I know now, I would do a few things differently:
+    \begin{itemize}
+        \item Focus on building the simplest system end to end before diving into data analysis. I spent a lot of
         time analysing the dialogue dataset that I didn't even ended up using. I believe having the system working end to
         end provides a good focus on what areas need analysing.
-        \item Writing pure Python using test-driven development from the beginning. I had quite a few bad bugs in my
-        Jupyter notebook code that I would have found earlier. The tests, when written well, can also be a great living
-        document on how the code works.
-        \item Use an experiment tracking tool and keep all configuration away from the rest of the code from the get go.
+        \item Write pure Python using test-driven development from the beginning. I had quite a few bugs in my
+        Jupyter notebook code that I would have found earlier. Well written unit tests also are a great living
+        document on how the system works.
+        \item Using an experiment tracking tool and keep all configuration away from the rest of the code from the get go.
         I spend a lot of time forgetting what I've tried and remembering F1 scores I then never could achieve again. Using
         an experiment tracking tool certainly helped me being able to reproduce and remember what I've tried and what results
         this achieved.
-        \item Be prepared to try different solutions quickly and setting up a pipeline where the model can be easily changed
-        to many different models.
+        \item Be prepared to try different solutions and setting up a pipeline where the models can be changed easily.
     \end{itemize}
 
     I've already made use of these learning for my other coursework.
@@ -422,7 +438,7 @@
             71       & 58          & 80          & 0  & 150    & 1                    & 3                    & 23.73 & 0.02        \\ \hline
             63       & 58          & 80          & 0  & 150    & 1                    & 2                    & 23.49 & 0.12        \\ \hline
         \end{tabularx}
-        \caption{5 best configurations for F1 score}
+        \caption{Five best configurations for F1 score}
         \label{table:5-best-f1}
     \end{table}
 
@@ -437,7 +453,7 @@
             74       & 51          & 70          & 1  & 50     & 0                    & 1                    & 15.02 & 1.62        \\ \hline
             76       & 53          & 100         & 1  & 50     & 0                    & 1                    & 14.90 & 1.40        \\ \hline
         \end{tabularx}
-        \caption{5 worst configurations for F1 score}
+        \caption{Five worst configurations for F1 score}
         \label{table:5-worst-f1}
     \end{table}
 
@@ -452,7 +468,7 @@
             127      & 94          & 80          & 1  & 150    & 1                    & 1                    & 20.28 & 4.38        \\ \hline
             55       & 59          & 80          & 0  & 150    & 1                    & 1                    & 20.66 & 4.36        \\ \hline
         \end{tabularx}
-        \caption{5 best configurations for exact match}
+        \caption{Five best configurations for exact match}
         \label{table:5-best-exact}
     \end{table}
 
@@ -467,7 +483,7 @@
             17       & 38          & 30          & 0  & 50     & 0                   & 3                    & 19.10 & 0           \\ \hline
             21       & 30          & 30          & 0  & 50     & 1                   & 3                    & 20.50 & 0           \\ \hline
         \end{tabularx}
-        \caption{5 worst configurations for exact match}
+        \caption{Five worst configurations for exact match}
         \label{table:5-worst-exact}
     \end{table}
 
@@ -482,7 +498,7 @@
             24       & 30          & 100         & 0  & 50     & 1                   & 3                    & 20.19 & 0           \\ \hline
             21       & 30          & 30          & 0  & 50     & 1                   & 3                    & 20.50 & 0           \\ \hline
         \end{tabularx}
-        \caption{5 best configurations for runtime including preprocessing, training and prediction time}
+        \caption{Five best configurations for runtime including preprocessing, training and prediction time}
         \label{table:5-best-runtime}
     \end{table}
 
@@ -497,7 +513,7 @@
             124      & 127         & 100         & 1  & 150    & 0                   & 1                    & 17.05 & 1.86        \\ \hline
             129      & 128         & 30          & 1  & 150    & 0                   & 2                    & 18.78 & 0.05        \\ \hline
         \end{tabularx}
-        \caption{5 worst configurations for runtime including preprocessing, training and prediction time}
+        \caption{Five worst configurations for runtime including preprocessing, training and prediction time}
         \label{table:5-worst-runtime}
     \end{table}
 
@@ -538,7 +554,7 @@
             Directly opposite influence on F1 and exact match. This might also be because the x most likely spans are not
             forced to follow each other in the document which is bad for exact match \\ \hline
         \end{tabularx}
-        \caption{Overview different Doc2Vec hyperparameters impacting F1 score and exact match}
+        \caption{Overview of the different Doc2Vec hyper parameters that have the biggest impact on F1 score and exact match}
         \label{table:simple-doc2vec-results}
     \end{table}
 
