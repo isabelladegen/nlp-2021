@@ -8,7 +8,51 @@ repository with more details.
 
 ## Project structure
 
-TODO
+```
+├── LICENSE
+├── README.md
+├── conda.yml
+├── notebooks
+│   ├── DataInvestigationDoc2Dial.ipynb
+│   ├── Doc2DialSubtask1.ipynb
+│   ├── Doc2VecSimple.ipynb
+│   ├── Doc2VecSolutionForSectionsForSubtask1.ipynb
+│   ├── Doc2VecSolutionForSpansForSubtask1.ipynb
+│   ├── RCDataInvestigation.ipynb
+├── report
+│   ├── Makefile
+│   ├── README.md
+│   ├── bibliography.bib
+│   ├── coling.bst
+│   ├── coling2020.sty
+│   ├── images
+│   │   ├── number_of_dialogues_and_turns.png
+│   │   ├── parallel-coordinates-F1.png
+│   │   ├── parallel-coordinates-exact-match.png
+│   │   ├── span_counts.png
+│   │   ├── sparsity_of_spans.png
+│   │   └── sub_section_usage_of_spans.png
+│   ├── nlp-report-isabella.tex
+├── src
+│   ├── __init__.py
+│   ├── configurations.py
+│   ├── evaluate.py
+│   ├── preprocessing_documents.py
+│   ├── preprocessing_rc.py
+│   ├── run_experiment.py
+│   ├── sweep.py
+│   ├── train_and_predict.py
+│   ├── tune_model_parameters_experiment.py
+├── tests
+│   ├── configurations_test.py
+│   ├── doc2vec_test.py
+│   ├── evaluate_test.py
+│   ├── preprocessing_documents_test.py
+│   ├── preprocessing_rc_test.py
+│   ├── train_and_predict_test.py
+│   └── utils
+│       └── test_utils.py
+```
 
 ## Environment Setup
 
