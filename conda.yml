@@ -12,7 +12,9 @@ dependencies:
   - scikit-learn
   - nltk
   - seaborn
-  - gensim
   - wandb # experiment mgr
   - pytest
   - pyhamcrest
+  - pip
+  - pip:
+    - gensim
